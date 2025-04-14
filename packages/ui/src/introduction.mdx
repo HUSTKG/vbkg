@@ -1,0 +1,235 @@
+import { Meta } from '@storybook/blocks';
+import { Logo } from './components/Logo';
+
+<Meta title="Introduction" />
+
+<div className="sb-container">
+  <div className='sb-section-title'>
+    # Knowledge Graph UI Components
+    
+    Thư viện UI components cho ứng dụng Knowledge Graph của bạn
+  </div>
+  
+  <div className="sb-section">
+    <div className="sb-section-item">
+      <h3 className="sb-section-item-heading">Giới thiệu</h3>
+      <p>
+        Knowledge Graph UI là bộ components UI tùy chỉnh được thiết kế đặc biệt cho các ứng dụng Knowledge Graph. 
+        Thư viện được xây dựng với React, Tailwind CSS và shadcn/ui, cung cấp các components mạnh mẽ, 
+        có khả năng tùy chỉnh cao và phù hợp với ngữ cảnh của các ứng dụng quản lý tri thức.
+      </p>
+    </div>
+
+    <div className="sb-section-item">
+      <h3 className="sb-section-item-heading">Cài đặt</h3>
+      ```bash
+      # Từ thư mục gốc của monorepo
+      npm install -D @your-org/ui
+      
+      # Hoặc trong package.json
+      "dependencies": {
+        "@your-org/ui": "workspace:*"
+      }
+      ```
+    </div>
+  </div>
+
+  <div className="sb-section">
+    <div className="sb-features-grid">
+      <div className="sb-grid-item">
+        <h3>Layout Components</h3>
+        <ul>
+          <li><a href="/?path=/docs/layout-applayout--docs">AppLayout</a> - Layout chính của ứng dụng</li>
+          <li><a href="/?path=/docs/ui-sidebarmenu--docs">SidebarMenu</a> - Menu điều hướng bên trái</li>
+        </ul>
+      </div>
+      
+      <div className="sb-grid-item">
+        <h3>Data Display Components</h3>
+        <ul>
+          <li><a href="/?path=/docs/ui-entitycard--docs">EntityCard</a> - Hiển thị thông tin về entity</li>
+          <li><a href="/?path=/docs/ui-resultcard--docs">ResultCard</a> - Hiển thị kết quả truy vấn</li>
+          <li><a href="/?path=/docs/ui-statisticcard--docs">StatisticCard</a> - Hiển thị thông tin thống kê</li>
+          <li><a href="/?path=/docs/ui-emptystate--docs">EmptyState</a> - Hiển thị trạng thái trống</li>
+        </ul>
+      </div>
+      
+      <div className="sb-grid-item">
+        <h3>Activity & Notification Components</h3>
+        <ul>
+          <li><a href="/?path=/docs/ui-recentactivityitem--docs">RecentActivityItem</a> - Hiển thị hoạt động gần đây</li>
+          <li><a href="/?path=/docs/ui-notificationitem--docs">NotificationItem</a> - Hiển thị thông báo</li>
+        </ul>
+      </div>
+      
+      <div className="sb-grid-item">
+        <h3>User Interface Components</h3>
+        <ul>
+          <li><a href="/?path=/docs/ui-searchbar--docs">SearchBar</a> - Thanh tìm kiếm</li>
+          <li><a href="/?path=/docs/ui-userdropdown--docs">UserDropdown</a> - Dropdown menu người dùng</li>
+          <li><a href="/?path=/docs/ui-confirmdialog--docs">ConfirmDialog</a> - Hộp thoại xác nhận</li>
+        </ul>
+      </div>
+      
+      <div className="sb-grid-item">
+        <h3>Ontology Components</h3>
+        <ul>
+          <li><a href="/?path=/docs/ui-ontologygraph--docs">OntologyGraph</a> - Trực quan hóa cấu trúc ontology</li>
+          <li><a href="/?path=/docs/ui-classdetails--docs">ClassDetails</a> - Hiển thị và chỉnh sửa chi tiết class</li>
+        </ul>
+      </div>
+      
+      <div className="sb-grid-item">
+        <h3>Shadcn/UI Components</h3>
+        <ul>
+          <li><a href="/?path=/docs/ui-button--docs">Button</a></li>
+          <li><a href="/?path=/docs/ui-card--docs">Card</a></li>
+          <li><a href="/?path=/docs/ui-input--docs">Input</a></li>
+          <li><a href="/?path=/docs/ui-table--docs">Table</a></li>
+          <li><a href="/?path=/docs/ui-tabs--docs">Tabs</a></li>
+          <li>Và nhiều components khác...</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div className="sb-section">
+    <div className="sb-section-item">
+      <h3 className="sb-section-item-heading">Sử dụng cơ bản</h3>
+      
+      ```jsx
+      import { AppLayout, EntityCard, Button } from '@your-org/ui';
+      import '@your-org/ui/style.css';
+      
+      function App() {
+        return (
+          <AppLayout>
+            <div className="p-6">
+              <h1 className="text-2xl font-bold mb-4">Knowledge Graph Explorer</h1>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <EntityCard 
+                  id="1"
+                  name="Apple Inc."
+                  type="Organization"
+                  properties={[
+                    { key: 'founded', value: '1976' },
+                    { key: 'headquarters', value: 'Cupertino, California, US' },
+                    { key: 'revenue', value: '$365.8 billion' }
+                  ]}
+                />
+                
+                <Button>Xem thêm</Button>
+              </div>
+            </div>
+          </AppLayout>
+        );
+      }
+      ```
+    </div>
+  </div>
+  
+  <div className="sb-section">
+    <div className="sb-section-item">
+      <h3 className="sb-section-item-heading">Theming</h3>
+      <p>
+        Components sử dụng biến CSS từ Tailwind CSS với hỗ trợ cho dark mode.
+        Mọi components đều có khả năng tùy chỉnh với Tailwind.
+      </p>
+    </div>
+    
+    <div className="sb-section-item">
+      <h3 className="sb-section-item-heading">Accessibility</h3>
+      <p>
+        Tất cả components đều được thiết kế với trọng tâm là accessibility,
+        tuân thủ các quy tắc WCAG và hỗ trợ keyboard navigation.
+      </p>
+    </div>
+  </div>
+  
+  <div className="sb-section">
+    <div className="sb-section-item">
+      <h3 className="sb-section-item-heading">Đóng góp</h3>
+      <p>
+        Đóng góp luôn được chào đón! Hãy tạo issue hoặc pull request trên repository của chúng tôi.
+      </p>
+    </div>
+    
+    <div className="sb-section-item">
+      <h3 className="sb-section-item-heading">License</h3>
+      <p>
+        MIT
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  {`
+  .sb-container {
+    margin-bottom: 48px;
+  }
+
+  .sb-section {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  
+  .sb-section-title {
+    margin-bottom: 32px;
+  }
+
+  .sb-section-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sb-section-item-heading {
+    padding-top: 20px !important;
+    padding-bottom: 5px !important;
+    margin: 0 !important;
+  }
+  
+  .sb-features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 32px;
+    width: 100%;
+  }
+  
+  .sb-grid-item h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+  }
+  
+  .sb-grid-item ul {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 20px;
+  }
+  
+  .sb-grid-item li {
+    margin-bottom: 8px;
+  }
+
+  @media screen and (max-width: 800px) {
+    .sb-section {
+      flex-direction: column;
+    }
+    
+    .sb-features-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .sb-features-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  `}
+</style>
