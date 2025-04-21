@@ -1,6 +1,8 @@
 // Utility
 export * from './lib/utils';
 
+import "./styles/global.css";
+
 // Layout Components
 export { default as AppLayout } from './layouts/main';
 export type { AppLayoutProps, MenuItem, MenuSubItem } from './layouts/main';
@@ -59,6 +61,8 @@ export {
   LoadingEmptyState 
 } from './components/empty-state';
 export type { EmptyStateProps, EmptyStateType } from './components/empty-state';
+
+export { default as AppForm } from './components/form';
 
 // Shadcn Components
 // These are re-exports from the shadcn components we've installed

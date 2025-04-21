@@ -10,11 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.4",
+    "@tanstack/react-query": "^5.74.4",
+    "@vbkg/ui": "workspace:*",
+    "@vbkg/utils": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@vbkg/ui": "workspace:*",
-    "@vbkg/types": "workspace:*",
-    "@vbkg/utils": "workspace:*"
+    "react-router": "^7.5.0",
+    "tailwindcss": "^4.1.4"
   },
   "devDependencies": {
     "@vbkg/config": "workspace:*",

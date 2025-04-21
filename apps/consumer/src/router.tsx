@@ -44,7 +44,36 @@ const router = createBrowserRouter(
 
       {/* Protected routes */}
       <Route element={<AppLayout children={<Outlet />} />}>
-        <Route path="/" element={<Dashboard />} />
+        <Route
+          path="/"
+          element={<Dashboard />}
+          loader={async () => {
+            return {
+              stats: {
+                nodeCount: 1000,
+                relationCount: 500,
+                conflictCount: 5,
+                userCount: 100,
+              },
+              recentActivities: [
+                {
+                  id: "1",
+                  type: "success",
+                  title: "Thêm node mới",
+                  description: "Đã thêm node mới thành công.",
+                  time: "2023-10-01T10:00:00Z",
+                },
+                {
+                  id: "2",
+                  type: "warning",
+                  title: "Cảnh báo xung đột dữ liệu",
+                  description: "Có xung đột trong dữ liệu.",
+                  time: "2023-10-02T12:00:00Z",
+                },
+              ],
+            };
+          }}
+        />
 
         {/* Knowledge Management */}
         <Route path="/resolve-conflict" element={<ResolveConflict />} />

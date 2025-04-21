@@ -1,5 +1,5 @@
-import { Graph, Node, Edge } from "@kg/types";
 import { cloneDeep } from "lodash";
+import { Edge, Graph, Node } from "../types/knowledge";
 
 export const findConnectedNodes = (graph: Graph, nodeId: string): Node[] => {
   const connectedEdges = graph.edges.filter(
@@ -13,11 +13,7 @@ export const findConnectedNodes = (graph: Graph, nodeId: string): Node[] => {
   return graph.nodes.filter((node) => connectedNodeIds.has(node.id));
 };
 
-export const findShortestPath = (
-  graph: Graph,
-  sourceId: string,
-  targetId: string,
-): Edge[] => {
+export const findShortestPath = (): Edge[] => {
   // Implement shortest path algorithm (e.g., Dijkstra's)
   return [];
 };
