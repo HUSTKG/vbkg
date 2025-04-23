@@ -19,6 +19,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
+  "packageManager": "bun@1.2.9",
   "workspaces": [
     "apps/*",
     "packages/*"

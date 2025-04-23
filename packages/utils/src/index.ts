@@ -1,8 +1,6 @@
-import { PaginatedResponse } from "./types/api";
+import { PaginatedResponse } from "@vbkg/types";
 
 // packages/utils/src/index.ts
-export * from "./api/request";
-export * from "./schemas/auth";
 export * from "./formatting/date";
 export * from "./helpers/graph";
 export * from "./constants";

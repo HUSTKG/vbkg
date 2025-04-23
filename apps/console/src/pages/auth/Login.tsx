@@ -1,14 +1,17 @@
-// packages/console/src/pages/auth/Login.tsx
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
-import { Card, Button, Input, ErrorNotification, AppForm } from "@vbkg/ui";
-import { loginSchema } from "@vbkg/utils";
+import { AppForm, Card } from "@vbkg/ui";
+import { loginSchema } from "@vbkg/schemas";
+import { Link } from "react-router";
+import { useLoginJson } from "@vbkg/api-client";
 
 export default function Login() {
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
+  const { mutate: login } = useLoginJson({
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -21,6 +24,9 @@ export default function Login() {
 
         <Card className="p-8">
           <AppForm
+            onSubmit={(values) => {
+              login(values);
+            }}
             schema={loginSchema}
             fields={[
               {

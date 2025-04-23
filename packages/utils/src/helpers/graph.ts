@@ -1,5 +1,5 @@
+import { Graph, Node, Edge } from "@vbkg/types";
 import { cloneDeep } from "lodash";
-import { Edge, Graph, Node } from "../types/knowledge";
 
 export const findConnectedNodes = (graph: Graph, nodeId: string): Node[] => {
   const connectedEdges = graph.edges.filter(

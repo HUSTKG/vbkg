@@ -1,31 +1,37 @@
 import axios from "axios";
+import { getConfig } from "./apiConfig";
 
-// config/axios.ts
-const api = axios.create({
-  baseURL: process.env.VITE_API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+// Create API instance with current config
+export const createApiInstance = () => {
+  const config = getConfig();
 
-// Add auth token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+  const api = axios.create({
+    baseURL: config.baseUrl,
+    headers: config.headers,
+  });
 
-// Handle errors globally
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Handle unauthorized
+  // Add auth token to requests
+  api.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return Promise.reject(error);
-  },
-);
+    return config;
+  });
 
-export default api;
+  // Handle errors globally
+  api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401) {
+        // Handle unauthorized
+      }
+      return Promise.reject(error);
+    },
+  );
+
+  return api;
+};
+
+// Get a fresh instance with current config
+export const api = () => createApiInstance();

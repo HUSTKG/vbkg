@@ -31,14 +31,3 @@ export interface DataReview {
   reviewedAt?: Date;
   comments?: string;
 }
-
-export interface DataSource {
-  id: string;
-  name: string;
-  type: "api" | "database" | "file" | "stream";
-  config: Record<string, unknown>;
-  status: "active" | "inactive" | "error";
-  schedule?: string; // Cron expression
-  lastSync?: Date;
-  error?: string;
-}

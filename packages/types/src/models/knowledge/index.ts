@@ -34,3 +34,8 @@ export interface Graph {
   nodes: Node[];
   edges: Edge[];
 }
+
+export type CypherQuery = {
+  query: string;
+  parameters?: Record<string, unknown>;
+};
