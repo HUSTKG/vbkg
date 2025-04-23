@@ -51,7 +51,9 @@ export interface IReadFiboPropertiesRequest {
 export interface IReadFiboPropertiesResponse
   extends PaginatedResponse<FIBOProperty> {}
 
-export interface IReadFiboPropertyRequest {}
+export interface IReadFiboPropertyRequest {
+  id: string;
+}
 export interface IReadFiboPropertyResponse extends ApiResponse<FIBOProperty> {}
 
 export interface ICreateFiboPropertyRequest extends FIBOPropertyCreate {}

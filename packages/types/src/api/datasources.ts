@@ -10,7 +10,9 @@ export interface ICreateDatasourceRequest extends DataSourceCreate {}
 
 export interface ICreateDatasourceResponse extends ApiResponse<DataSource> {}
 
-export interface IGetDatasourceRequest {}
+export interface IGetDatasourceRequest {
+	id: string;
+}
 export interface IGetDatasourceResponse {}
 
 export interface IGetDatasourcesRequest {
@@ -55,13 +57,13 @@ export interface IGetFileUploadRequest {
 }
 export interface IGetFileUploadResponse extends ApiResponse<FileUpload> {}
 
-export interface IUploadFileStatusRequest {
+export interface IUpdateFileStatusRequest {
   id: string;
   status: FileUploadStatus;
   error_message?: string;
   processed?: boolean;
 }
-export interface IUploadFileStatusResponse extends ApiResponse<FileUpload> {}
+export interface IUpdateFileStatusResponse extends ApiResponse<FileUpload> {}
 
 export interface IDeleteFileUploadRequest {
   id: string;

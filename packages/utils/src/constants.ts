@@ -15,7 +15,7 @@ export const API_ENDPOINTS = {
   UPLOAD_FILE: (id: string) => `/datasources/${id}/upload`,
   READ_FILE_UPLOADS: "/datasources/files",
   READ_FILE_UPLOAD: (id: string) => `/datasources/files/${id}`,
-  READ_FILE_STATUS: (file_id: string) => `/datasources/files/${file_id}/status`,
+  UPDATE_FILE_STATUS: (file_id: string) => `/datasources/files/${file_id}/status`,
   DELETE_FILE_UPLOAD: (file_id: string) => `/datasources/files/${file_id}`,
   READ_FILE_CONTENT: (file_id: string) =>
     `/datasources/files/${file_id}/content`,
@@ -47,12 +47,12 @@ export const API_ENDPOINTS = {
 
   // Knowledge
   CREATE_ENTITY: "/knowledge/entities",
-  READ_ENTITIES: (id: string) => `/knowledge/entities/${id}`,
+  READ_ENTITY: (id: string) => `/knowledge/entities/${id}`,
   READ_ENTITY_RELATIONSHIPS: (id: string) =>
     `/knowledge/entities/${id}/relationships`,
   UPDATE_ENTITY: (id: string) => `/knowledge/entities/${id}`,
   DELETE_ENTITY: (id: string) => `/knowledge/entities/${id}`,
-  SEARCH_ENTITIES: "/knowledge/entities/search",
+  SEARCH_KG_ENTITIES: "/knowledge/entities/search",
   CREATE_RELATIONSHIP: "/knowledge/relationships",
   EXCUTE_QUERY: "/knowledge/query",
   GET_KNOWLEDGE_GRAPH_STATS: "/knowledge/graph/stats",
@@ -80,7 +80,7 @@ export const API_ENDPOINTS = {
   CANCEL_PIPELINE_RUN: (run_id: string) => `/pipelines/runs/${run_id}/cancel`,
 
   // Search
-  SERACH_ENTITIES: "/search/entities",
+  SEARCH_ENTITIES: "/search/entities",
   FIND_SIMILAR_ENTITIES: "/search/similar",
   GRAPH_SEARCH: "/search/graph",
   GENERATE_EMBEDDINGS: "/search/embeddings",

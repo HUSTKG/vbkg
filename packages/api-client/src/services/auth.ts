@@ -4,7 +4,10 @@ import {
   ILoginJsonResponse,
   ILoginRequest,
   ILoginResponse,
+  ILogoutRequest,
+  ILogoutResponse,
 } from "@vbkg/types";
+import { IRegisterRequest, IRegisterResponse } from "@vbkg/types/src";
 import { API_ENDPOINTS } from "@vbkg/utils";
 
 const login = async (input: ILoginRequest): Promise<ILoginResponse> => {
@@ -21,7 +24,23 @@ const loginJson = async (
     .then((res) => res.data);
 };
 
+const register = async (
+  input: IRegisterRequest,
+): Promise<IRegisterResponse> => {
+  return await api()
+    .post<IRegisterResponse>(API_ENDPOINTS.REGISTER, input)
+    .then((res) => res.data);
+};
+
+const logout = async (input: ILogoutRequest): Promise<ILogoutResponse> => {
+  return await api()
+    .post<ILogoutResponse>(API_ENDPOINTS.LOGOUT, input)
+    .then((res) => res.data);
+};
+
 export const AuthService = {
   login,
   loginJson,
+  register,
+  logout,
 };

@@ -11,10 +11,10 @@ import { Relationship } from "../models/relationship";
 export interface ICreateEntityRequest extends EntityCreate {}
 export interface ICreateEntityResponse extends ApiResponse<Entity> {}
 
-export interface IReadEntitiesRequest {
+export interface IReadEntityRequest {
   id: string;
 }
-export interface IReadEntitiesResponse extends ApiResponse<Entity> {}
+export interface IReadEntityResponse extends ApiResponse<Entity> {}
 
 export interface IReadEntityRelationshipsRequest {
   id: string;
