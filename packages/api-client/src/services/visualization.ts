@@ -56,7 +56,7 @@ const readPublicVisualizations = async (
 const readVisualization = async (input: IReadVisualizationRequest) => {
   return await api().get<IReadVisualizationResponse>(
     API_ENDPOINTS.READ_VISUALIZATION(input.id),
-  );
+  ).then((res) => res.data);
 };
 
 const updateVisualization = async (input: IUpdateVisualizationRequest) => {
@@ -79,7 +79,7 @@ const deleteVisualization = async (input: IDeleteVisualizationRequest) => {
 const getVisualizationData = async (input: IGetVisualizationDataRequest) => {
   return await api().get<IGetVisualizationDataResponse>(
     API_ENDPOINTS.GET_VISUALIZATION_DATA(input.id),
-  );
+  ).then((res) => res.data);
 };
 
 const createDefaultVisualization = async (

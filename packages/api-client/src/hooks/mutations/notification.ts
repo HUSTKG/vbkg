@@ -1,26 +1,40 @@
-import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
-import { api } from "../config/axios";
-import { Notification, NotificationCreate } from "../schemas/notification.schemas";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {
+  ICreateNotificationRequest,
+  ICreateNotificationResponse,
+  IDeleteNotificationRequest,
+  IDeleteNotificationResponse,
+  IMarkNotificationReadRequest,
+  IMarkNotificationReadResponse,
+} from "@vbkg/types";
+import { NotificationService } from "../../services/notification";
 
-
-// Create a notification
+// Create a new notification
 export const useCreateNotification = (
-  options: UseMutationOptions<Notification, Error, NotificationCreate>
+  options: UseMutationOptions<ICreateNotificationResponse, Error, ICreateNotificationRequest>,
 ) => {
-  return useMutation({
-    mutationFn: async (input: NotificationCreate) =>
-      await api().post("/notifications", input).then(res => res.data),
+  return useMutation<ICreateNotificationResponse, Error, ICreateNotificationRequest>({
+    mutationFn: NotificationService.createNotification,
+    ...options,
+  });
+};
+
+// Delete a notification
+export const useDeleteNotification = (
+  options: UseMutationOptions<IDeleteNotificationResponse, Error, IDeleteNotificationRequest>,
+) => {
+  return useMutation<IDeleteNotificationResponse, Error, IDeleteNotificationRequest>({
+    mutationFn: NotificationService.deleteNotification,
     ...options,
   });
 };
 
 // Mark notification as read
 export const useMarkNotificationAsRead = (
-  options: UseMutationOptions<Notification, Error, string>
+  options: UseMutationOptions<IMarkNotificationReadResponse, Error, IMarkNotificationReadRequest>,
 ) => {
-  return useMutation({
-    mutationFn: async (notificationId: string) =>
-      await api().put(`/notifications/${notificationId}/read`).then(res => res.data),
+  return useMutation<IMarkNotificationReadResponse, Error, IMarkNotificationReadRequest>({
+    mutationFn: NotificationService.markNotificationAsRead,
     ...options,
   });
 };

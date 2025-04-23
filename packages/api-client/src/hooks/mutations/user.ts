@@ -1,38 +1,40 @@
-import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
-import { api } from "../config/axios";
-import { User, UserUpdate } from "../schemas/user.schemas";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {
+  IUpdateUserMeRequest,
+  IUpdateUserMeResponse,
+  IUpdateUserRequest,
+  IUpdateUserResponse,
+  IDeleteUserRequest,
+  IDeleteUserResponse,
+} from "@vbkg/types";
+import { UserService } from "../../services/user";
 
-
-// Update current user's profile
-export const useUpdateCurrentUser = (
-  options: UseMutationOptions<User, Error, UserUpdate>
+// Update current user
+export const useUpdateUserMe = (
+  options: UseMutationOptions<IUpdateUserMeResponse, Error, IUpdateUserMeRequest>,
 ) => {
-  return useMutation({
-    mutationFn: async (input: UserUpdate) =>
-      await api().patch("/users/me", input).then(res => res.data),
+  return useMutation<IUpdateUserMeResponse, Error, IUpdateUserMeRequest>({
+    mutationFn: UserService.updateUserMe,
     ...options,
   });
 };
 
-
-// Update a specific user (admin only)
+// Update specific user
 export const useUpdateUser = (
-  options: UseMutationOptions<User, Error, { userId: string; data: UserUpdate }>
+  options: UseMutationOptions<IUpdateUserResponse, Error, IUpdateUserRequest>,
 ) => {
-  return useMutation({
-    mutationFn: async ({ userId, data }) =>
-      await api().patch(`/users/${userId}`, data).then(res => res.data),
+  return useMutation<IUpdateUserResponse, Error, IUpdateUserRequest>({
+    mutationFn: UserService.updateUser,
     ...options,
   });
 };
 
-// Delete a user (admin only)
+// Delete user
 export const useDeleteUser = (
-  options: UseMutationOptions<void, Error, string>
+  options: UseMutationOptions<IDeleteUserResponse, Error, IDeleteUserRequest>,
 ) => {
-  return useMutation({
-    mutationFn: async (userId: string) =>
-      await api().delete(`/users/${userId}`).then(res => res.data),
+  return useMutation<IDeleteUserResponse, Error, IDeleteUserRequest>({
+    mutationFn: UserService.deleteUser,
     ...options,
   });
 };

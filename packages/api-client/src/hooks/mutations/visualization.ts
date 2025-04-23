@@ -1,68 +1,75 @@
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import {
-  useMutation,
-  useQuery,
-  UseMutationOptions,
-  UseQueryOptions,
-} from "@tanstack/react-query";
-import { api } from "../config/axios";
-import {
-  VisualizationCreate,
-  VisualizationUpdate,
-  DefaultVisualizationRequest,
-} from "../schemas/visualization.schemas";
+  ICreateVisualizationRequest,
+  ICreateDefaultVisualizationRequest,
+  ICreateDefaultVisualizationResponse,
+  IUpdateVisualizationRequest,
+  IUpdateVisualizationResponse,
+  IDeleteVisualizationRequest,
+  IDeleteVisualizationResponse,
+} from "@vbkg/types";
+import { VisualizationService } from "../../services/visualization";
 
-// Create Visualization
+// Create visualization
 export const useCreateVisualization = (
-  options: UseMutationOptions<any, Error, VisualizationCreate>,
+  options: UseMutationOptions<any, Error, ICreateVisualizationRequest>,
 ) => {
-  return useMutation({
-    mutationFn: async (input: VisualizationCreate) =>
-      await api()
-        .post("/visualizations", input)
-        .then((res) => res.data),
+  return useMutation<any, Error, ICreateVisualizationRequest>({
+    mutationFn: VisualizationService.createVisualization,
     ...options,
   });
 };
 
-// Update Visualization
-export const useUpdateVisualization = (
+// Create default visualization
+export const useCreateDefaultVisualization = (
   options: UseMutationOptions<
-    any,
+    ICreateDefaultVisualizationResponse,
     Error,
-    { visualizationId: string; data: VisualizationUpdate }
+    ICreateDefaultVisualizationRequest
   >,
 ) => {
-  return useMutation({
-    mutationFn: async ({ visualizationId, data }) =>
-      await api()
-        .patch(`/visualizations/${visualizationId}`, data)
-        .then((res) => res.data),
+  return useMutation<
+    ICreateDefaultVisualizationResponse,
+    Error,
+    ICreateDefaultVisualizationRequest
+  >({
+    mutationFn: VisualizationService.createDefaultVisualization,
     ...options,
   });
 };
 
-// Delete Visualization
+// Update visualization
+export const useUpdateVisualization = (
+  options: UseMutationOptions<
+    IUpdateVisualizationResponse,
+    Error,
+    IUpdateVisualizationRequest
+  >,
+) => {
+  return useMutation<
+    IUpdateVisualizationResponse,
+    Error,
+    IUpdateVisualizationRequest
+  >({
+    mutationFn: VisualizationService.updateVisualization,
+    ...options,
+  });
+};
+
+// Delete visualization
 export const useDeleteVisualization = (
-  options: UseMutationOptions<any, Error, string>,
+  options: UseMutationOptions<
+    IDeleteVisualizationResponse,
+    Error,
+    IDeleteVisualizationRequest
+  >,
 ) => {
-  return useMutation({
-    mutationFn: async (visualizationId: string) =>
-      await api()
-        .delete(`/visualizations/${visualizationId}`)
-        .then((res) => res.data),
-    ...options,
-  });
-};
-
-// Create Default Visualization
-export const useCreateDefaultVisualization = (
-  options: UseMutationOptions<any, Error, DefaultVisualizationRequest>,
-) => {
-  return useMutation({
-    mutationFn: async (input: DefaultVisualizationRequest) =>
-      await api()
-        .post("/visualizations/default", input)
-        .then((res) => res.data),
+  return useMutation<
+    IDeleteVisualizationResponse,
+    Error,
+    IDeleteVisualizationRequest
+  >({
+    mutationFn: VisualizationService.deleteVisualization,
     ...options,
   });
 };

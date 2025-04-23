@@ -1,81 +1,64 @@
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import {
-  useMutation,
-  useQuery,
-  UseMutationOptions,
-  UseQueryOptions,
-} from "@tanstack/react-query";
-import { api } from "../config/axios";
-import {
-  PipelineCreate,
-  PipelineUpdate,
-  PipelineRunCreate,
-} from "../schemas/pipeline.schemas";
+  ICreatePipelineRequest,
+  ICreatePipelineResponse,
+  IUpdatePipelineRequest,
+  IUpdatePipelineResponse,
+  IDeletePipelineRequest,
+  IDeletePipelineResponse,
+  IRunPipelineRequest,
+  IRunPipelineResponse,
+  ICancelPipelineRunRequest,
+  ICancelPipelineRunResponse,
+} from "@vbkg/types";
+import { PipelineService } from "../../services/pipeline";
 
-// Create Pipeline
+// Create a new pipeline
 export const useCreatePipeline = (
-  options: UseMutationOptions<any, Error, PipelineCreate>,
+  options: UseMutationOptions<ICreatePipelineResponse, Error, ICreatePipelineRequest>,
 ) => {
-  return useMutation({
-    mutationFn: async (input: PipelineCreate) =>
-      await api()
-        .post("/", input)
-        .then((res) => res.data),
+  return useMutation<ICreatePipelineResponse, Error, ICreatePipelineRequest>({
+    mutationFn: PipelineService.createPipeline,
     ...options,
   });
 };
 
-// Update Pipeline
+// Update an existing pipeline
 export const useUpdatePipeline = (
-  options: UseMutationOptions<
-    any,
-    Error,
-    { pipelineId: string; data: PipelineUpdate }
-  >,
+  options: UseMutationOptions<IUpdatePipelineResponse, Error, IUpdatePipelineRequest>,
 ) => {
-  return useMutation({
-    mutationFn: async ({ pipelineId, data }) =>
-      await api()
-        .patch(`/${pipelineId}`, data)
-        .then((res) => res.data),
+  return useMutation<IUpdatePipelineResponse, Error, IUpdatePipelineRequest>({
+    mutationFn: PipelineService.updatePipeline,
     ...options,
   });
 };
 
-// Delete Pipeline
+// Delete a pipeline
 export const useDeletePipeline = (
-  options: UseMutationOptions<any, Error, string>,
+  options: UseMutationOptions<IDeletePipelineResponse, Error, IDeletePipelineRequest>,
 ) => {
-  return useMutation({
-    mutationFn: async (pipelineId: string) =>
-      await api()
-        .delete(`/${pipelineId}`)
-        .then((res) => res.data),
+  return useMutation<IDeletePipelineResponse, Error, IDeletePipelineRequest>({
+    mutationFn: PipelineService.deletePipeline,
     ...options,
   });
 };
 
-// Run Pipeline
+// Run a pipeline
 export const useRunPipeline = (
-  options: UseMutationOptions<any, Error, PipelineRunCreate>,
+  options: UseMutationOptions<IRunPipelineResponse, Error, IRunPipelineRequest>,
 ) => {
-  return useMutation({
-    mutationFn: async (input: PipelineRunCreate) =>
-      await api()
-        .post("/run", input)
-        .then((res) => res.data),
+  return useMutation<IRunPipelineResponse, Error, IRunPipelineRequest>({
+    mutationFn: PipelineService.runPipeline,
     ...options,
   });
 };
 
-// Cancel Pipeline Run
+// Cancel a pipeline run
 export const useCancelPipelineRun = (
-  options: UseMutationOptions<any, Error, string>,
+  options: UseMutationOptions<ICancelPipelineRunResponse, Error, ICancelPipelineRunRequest>,
 ) => {
-  return useMutation({
-    mutationFn: async (runId: string) =>
-      await api()
-        .post(`/pipelines/runs/${runId}/cancel`)
-        .then((res) => res.data),
+  return useMutation<ICancelPipelineRunResponse, Error, ICancelPipelineRunRequest>({
+    mutationFn: PipelineService.cancelPipelineRun,
     ...options,
   });
 };

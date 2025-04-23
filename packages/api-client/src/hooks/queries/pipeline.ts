@@ -1,45 +1,74 @@
-// Fetch Pipelines
-export const useFetchPipelines = (
-  options: UseQueryOptions<any, Error>
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {
+  IReadPipelinesRequest,
+  IReadPipelinesResponse,
+  IReadPipelineRequest,
+  IReadPipelineResponse,
+  IReadPipelineRunsRequest,
+  IReadPipelineRunsResponse,
+  IReadPipelineRunRequest,
+  IReadPipelineRunResponse,
+  IGetPipelineRunStatusRequest,
+  IGetPipelineRunStatusResponse,
+} from "@vbkg/types";
+import { PipelineService } from "../../services/pipeline";
+
+// Fetch all pipelines
+export const usePipelines = (
+  input: IReadPipelinesRequest,
+  options?: UseQueryOptions<IReadPipelinesResponse, Error>,
 ) => {
-  return useQuery(
-    ["pipelines"],
-    async () => await api().get("/").then(res => res.data),
-    options
-  );
+  return useQuery<IReadPipelinesResponse, Error>({
+    queryKey: ["pipelines", input],
+    queryFn: () => PipelineService.readPipelines(input),
+    ...options,
+  });
 };
 
-// Fetch Pipeline Run Status
-export const useFetchPipelineRunStatus = (
-  runId: string,
-  options: UseQueryOptions<any, Error>
+// Fetch a specific pipeline
+export const usePipeline = (
+  input: IReadPipelineRequest,
+  options?: UseQueryOptions<IReadPipelineResponse, Error>,
 ) => {
-  return useQuery(
-    ["pipelineRunStatus", runId],
-    async () => await api().get(`/pipelines/runs/${runId}/status`).then(res => res.data),
-    options
-  );
+  return useQuery<IReadPipelineResponse, Error>({
+    queryKey: ["pipeline", input.id],
+    queryFn: () => PipelineService.readPipeline(input),
+    ...options,
+  });
 };
 
-// Fetch Pipeline Runs
-export const useFetchPipelineRuns = (
-  options: UseQueryOptions<any, Error>
+// Fetch all pipeline runs
+export const usePipelineRuns = (
+  input: IReadPipelineRunsRequest,
+  options?: UseQueryOptions<IReadPipelineRunsResponse, Error>,
 ) => {
-  return useQuery(
-    ["pipelineRuns"],
-    async () => await api().get("/pipelines/runs").then(res => res.data),
-    options
-  );
+  return useQuery<IReadPipelineRunsResponse, Error>({
+    queryKey: ["pipelineRuns", input],
+    queryFn: () => PipelineService.readPipelineRuns(input),
+    ...options,
+  });
 };
 
-// Fetch Specific Pipeline Run
-export const useFetchPipelineRun = (
-  runId: string,
-  options: UseQueryOptions<any, Error>
+// Fetch a specific pipeline run
+export const usePipelineRun = (
+  input: IReadPipelineRunRequest,
+  options?: UseQueryOptions<IReadPipelineRunResponse, Error>,
 ) => {
-  return useQuery(
-    ["pipelineRun", runId],
-    async () => await api().get(`/pipelines/runs/${runId}`).then(res => res.data),
-    options
-  );
+  return useQuery<IReadPipelineRunResponse, Error>({
+    queryKey: ["pipelineRun", input.id],
+    queryFn: () => PipelineService.readPipelineRun(input),
+    ...options,
+  });
+};
+
+// Get pipeline run status
+export const usePipelineRunStatus = (
+  input: IGetPipelineRunStatusRequest,
+  options?: UseQueryOptions<IGetPipelineRunStatusResponse, Error>,
+) => {
+  return useQuery<IGetPipelineRunStatusResponse, Error>({
+    queryKey: ["pipelineRunStatus", input.id],
+    queryFn: () => PipelineService.getPipelineRunStatus(input),
+    ...options,
+  });
 };
