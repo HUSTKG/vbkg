@@ -27,3 +27,14 @@ export const registerSchema = loginSchema
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
+
+// Schema for JSON-based login
+export const LoginJsonSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
+
+// Schema for logout
+export const LogoutSchema = z.object({
+  token: z.string().min(1), // Token is required
+});
