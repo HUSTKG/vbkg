@@ -1,15 +1,18 @@
 interface InitializeApiProps {
   baseUrl: string;
+  bearerToken?: string;
   headers?: Record<string, string>;
 }
 
 let config: {
   baseUrl: string;
+  bearerToken?: string;
   headers: Record<string, string>;
 } = {
   baseUrl: "",
   headers: {
     "Content-Type": "application/json",
+	Accept: "application/json",
   },
 };
 

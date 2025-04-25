@@ -1,18 +1,18 @@
-export enum PipelineType { 
+export enum PipelineType {
   EXTRACTION = "extraction",
   TRANSFORMATION = "transformation",
   LOADING = "loading",
-  COMPLETE = "complete"
+  COMPLETE = "complete",
 }
 
-export enum PipelineStatus { 
+export enum PipelineStatus {
   PENDING = "pending",
   RUNNING = "running",
   COMPLETED = "completed",
-  FAILED = "failed"
+  FAILED = "failed",
 }
 
-export enum PipelineStepType { 
+export enum PipelineStepType {
   FILE_READER = "file_reader",
   API_FETCHER = "api_fetcher",
   DATABASE_EXTRACTOR = "database_extractor",
@@ -21,7 +21,7 @@ export enum PipelineStepType {
   FIBO_MAPPER = "fibo_mapper",
   ENTITY_RESOLUTION = "entity_resolution",
   KNOWLEDGE_GRAPH_WRITER = "knowledge_graph_writer",
-  CUSTOM_PYTHON = "custom_python"
+  CUSTOM_PYTHON = "custom_python",
 }
 
 export interface StepConfig {
@@ -122,8 +122,8 @@ export interface PipelineBase {
   schedule?: string; // CRON expression
 }
 
-export interface PipelineCreate extends PipelineBase {
-  // No additional fields
+export interface PipelineCreate extends Omit<PipelineBase, "steps"> {
+  steps: Omit<PipelineStep, "id">[];
 }
 
 export interface PipelineUpdate {

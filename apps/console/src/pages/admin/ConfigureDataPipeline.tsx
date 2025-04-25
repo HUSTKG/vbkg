@@ -1,70 +1,344 @@
-// packages/console/src/pages/admin/ConfigureDataPipeline.tsx
+import { useCreatePipeline, usePipelines } from "@vbkg/api-client";
+import { CreatePipelineSchema } from "@vbkg/schemas";
+import { Pipeline, PipelineStepType, PipelineType } from "@vbkg/types";
 import {
+  AppForm,
   Button,
   Card,
-  ConfirmDialog,
   DeleteDialog,
+  Dialog,
   ErrorNotification,
   OntologyGraph,
-  SearchBar,
-  StatisticCard,
   SuccessNotification,
-  Table,
 } from "@vbkg/ui";
 import { useState } from "react";
+import { FieldConfig } from "../../../../../packages/ui/dist/components/form";
 
-interface Pipeline {
-  id: string;
-  name: string;
-  type: "ETL" | "Processing" | "Validation";
-  status: "Active" | "Paused" | "Error";
-  source: string;
-  target: string;
-  schedule: string;
-  lastRun: string;
-  nextRun: string;
-  performance: {
-    successRate: number;
-    avgProcessingTime: number;
-    errorCount: number;
-  };
-}
+const getPipelineStepConfig = (step_type: PipelineStepType): FieldConfig[] => {
+  switch (step_type) {
+    case PipelineStepType.API_FETCHER:
+      return [
+        {
+          label: "API URL",
+          name: "url",
+          type: "text",
+          placeholder: "Enter API URL",
+          required: true,
+        },
+        {
+          label: "Method",
+          name: "method",
+          type: "select",
+          placeholder: "Select HTTP method",
+          options: [
+            { label: "GET", value: "GET" },
+            { label: "POST", value: "POST" },
+            { label: "PUT", value: "PUT" },
+            { label: "DELETE", value: "DELETE" },
+          ],
+          required: true,
+        },
+        {
+          label: "Headers",
+          name: "headers",
+          type: "textarea",
+          placeholder: "Enter headers in JSON format",
+        },
+        {
+          label: "Query Parameters",
+          name: "params",
+          type: "textarea",
+          placeholder: "Enter query parameters in JSON format",
+        },
+        {
+          label: "Body",
+          name: "body",
+          type: "textarea",
+          placeholder: "Enter body in JSON format",
+        },
+        {
+          label: "Authentication Type",
+          name: "auth_type",
+          type: "select",
+          placeholder: "Select authentication type",
+          options: [
+            { label: "Basic", value: "BASIC" },
+            { label: "Bearer", value: "BEARER" },
+          ],
+        },
+        {
+          label: "Authentication Config",
+          name: "auth_config",
+          type: "textarea",
+          placeholder: "Enter authentication config in JSON format",
+        },
+      ];
+    case PipelineStepType.CUSTOM_PYTHON:
+      return [
+        {
+          label: "Python Code",
+          name: "code",
+          type: "textarea",
+          placeholder: "Enter Python code",
+          required: true,
+        },
+        {
+          label: "Requirements",
+          name: "requirements",
+          type: "textarea",
+          placeholder: "Enter requirements in JSON format",
+        },
+        {
+          label: "Input Mapping",
+          name: "input_mapping",
+          type: "textarea",
+          placeholder: "Enter input mapping in JSON format",
+        },
+        {
+          label: "Output Mapping",
+          name: "output_mapping",
+          type: "textarea",
+          placeholder: "Enter output mapping in JSON format",
+        },
+        {
+          label: "Timeout",
+          name: "timeout",
+          type: "number",
+          placeholder: "Enter timeout in seconds",
+          required: true,
+        },
+      ];
+    case PipelineStepType.FIBO_MAPPER:
+      return [
+        {
+          label: "Mapping Confidence Threshold",
+          name: "mapping_confidence_threshold",
+          type: "number",
+          placeholder: "Enter mapping confidence threshold",
+          required: true,
+        },
+        {
+          label: "Save Mappings",
+          name: "save_mappings",
+          type: "checkbox",
+          placeholder: "Save mappings",
+        },
+        {
+          label: "Suggest Mappings",
+          name: "suggest_mappings",
+          type: "checkbox",
+          placeholder: "Suggest mappings",
+        },
+        {
+          label: "Domains",
+          name: "domains",
+          type: "textarea",
+          placeholder: "Enter domains in JSON format",
+        },
+        {
+          label: "Verify Mappings",
+          name: "verify_mappings",
+          type: "checkbox",
+          placeholder: "Verify mappings",
+        },
+      ];
+    case PipelineStepType.FILE_READER:
+      return [
+        {
+          label: "File ID",
+          name: "file_id",
+          type: "text",
+          placeholder: "Enter file ID",
+          required: true,
+        },
+        {
+          label: "Encoding",
+          name: "encoding",
+          type: "text",
+          placeholder: "Enter encoding (e.g., utf-8)",
+        },
+        {
+          label: "Chunk Size",
+          name: "chunk_size",
+          type: "number",
+          placeholder: "Enter chunk size",
+        },
+      ];
+    case PipelineStepType.KNOWLEDGE_GRAPH_WRITER:
+      return [
+        {
+          label: "Batch Size",
+          name: "batch_size",
+          type: "number",
+          placeholder: "Enter batch size",
+          required: true,
+        },
+        {
+          label: "Create If Not Exists",
+          name: "create_if_not_exists",
+          type: "checkbox",
+          placeholder: "Create if not exists",
+        },
+        {
+          label: "Update If Exists",
+          name: "update_if_exists",
+          type: "checkbox",
+          placeholder: "Update if exists",
+        },
+        {
+          label: "Store Metadata",
+          name: "store_metadata",
+          type: "checkbox",
+          placeholder: "Store metadata",
+        },
+        {
+          label: "Track Provenance",
+          name: "track_provenance",
+          type: "checkbox",
+          placeholder: "Track provenance",
+        },
+        {
+          label: "Commit Strategy",
+          name: "commit_strategy",
+          type: "select",
+          placeholder: "Select commit strategy",
+          options: [
+            { label: "Batch", value: "batch" },
+            { label: "Single", value: "single" },
+            { label: "Transaction", value: "transaction" },
+          ],
+          required: true,
+        },
+      ];
+    case PipelineStepType.LLM_ENTITY_EXTRACTOR:
+      return [
+        {
+          label: "Model",
+          name: "model",
+          type: "text",
+          placeholder: "Enter model name",
+        },
+        {
+          label: "Temperature",
+          name: "temperature",
+          type: "number",
+          placeholder: "Enter temperature value",
+        },
+        {
+          label: "Entity Types",
+          name: "entity_types",
+          type: "textarea",
+          placeholder: "Enter entity types in JSON format",
+        },
+        {
+          label: "Prompt Template",
+          name: "prompt_template",
+          type: "textarea",
+          placeholder: "Enter prompt template",
+        },
+        {
+          label: "Max Tokens",
+          name: "max_tokens",
+          type: "number",
+          placeholder: "Enter max tokens",
+        },
+        {
+          label: "Extract Relationships",
+          name: "extract_relationships",
+          type: "checkbox",
+          placeholder: "Extract relationships",
+        },
+        {
+          label: "Context Window",
+          name: "context_window",
+          type: "number",
+          placeholder: "Enter context window size",
+        },
+      ];
+    case PipelineStepType.TEXT_EXTRACTOR:
+      return [
+        {
+          label: "Input Format",
+          name: "input_format",
+          type: "text",
+          placeholder: "Enter input format (e.g., pdf, docx)",
+          required: true,
+        },
+        {
+          label: "Extract Tables",
+          name: "extract_tables",
+          type: "checkbox",
+          placeholder: "Extract tables",
+        },
+        {
+          label: "Extract Metadata",
+          name: "extract_metadata",
+          type: "checkbox",
+          placeholder: "Extract metadata",
+        },
+        {
+          label: "Language",
+          name: "language",
+          type: "text",
+          placeholder: "Enter language code (e.g., en)",
+        },
+      ];
+    case PipelineStepType.ENTITY_RESOLUTION:
+      return [
+        {
+          label: "Resolution Strategy",
+          name: "resolution_strategy",
+          type: "text",
+          placeholder: "Enter resolution strategy",
+          required: true,
+        },
+        {
+          label: "Similarity Threshold",
+          name: "similarity_threshold",
+          type: "number",
+          placeholder: "Enter similarity threshold",
+        },
+        {
+          label: "Match On",
+          name: "match_on",
+          type: "textarea",
+          placeholder: "Enter fields to match on in JSON format",
+        },
+        {
+          label: "Fuzzy Algorithm",
+          name: "fuzzy_algorithm",
+          type: "text",
+          placeholder: "Enter fuzzy algorithm",
+        },
+        {
+          label: "Handle Conflicts",
+          name: "handle_conflicts",
+          type: "text",
+          placeholder: "Enter conflict handling strategy",
+        },
+        {
+          label: "Embedding Model",
+          name: "embedding_model",
+          type: "text",
+          placeholder: "Enter embedding model name",
+        },
+      ];
+    default:
+      return [];
+  }
+};
 
 export default function ConfigureDataPipeline() {
-  const [pipelines, setPipelines] = useState<Pipeline[]>([
-    {
-      id: "1",
-      name: "Main ETL Pipeline",
-      type: "ETL",
-      status: "Active",
-      source: "External API",
-      target: "Knowledge Graph",
-      schedule: "*/15 * * * *",
-      lastRun: "2024-04-16 10:30",
-      nextRun: "2024-04-16 10:45",
-      performance: {
-        successRate: 98.5,
-        avgProcessingTime: 45,
-        errorCount: 2,
-      },
+  const pipelines = usePipelines({})?.data?.data || [];
+
+  const { mutate: createPipeline } = useCreatePipeline({
+    onSuccess: (data) => {
+      console.log("Pipeline created successfully", data);
     },
-    {
-      id: "2",
-      name: "Data Validation",
-      type: "Validation",
-      status: "Active",
-      source: "Raw Data",
-      target: "Validated Data",
-      schedule: "0 */1 * * *",
-      lastRun: "2024-04-16 10:00",
-      nextRun: "2024-04-16 11:00",
-      performance: {
-        successRate: 99.2,
-        avgProcessingTime: 30,
-        errorCount: 1,
-      },
+    onError: (error) => {
+      console.error("Error creating pipeline", error);
     },
-  ]);
+  });
 
   const [selectedPipeline, setSelectedPipeline] = useState<Pipeline | null>(
     null,
@@ -86,61 +360,10 @@ export default function ConfigureDataPipeline() {
         </Button>
       </div>
 
-      {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatisticCard
-          title="Total Pipelines"
-          value={pipelines.length.toString()}
-          trend={{
-            value: pipelines.length,
-            isPositive: pipelines.length > 0,
-          }}
-        />
-        <StatisticCard
-          title="Active Pipelines"
-          value={pipelines
-            .filter((p) => p.status === "Active")
-            .length.toString()}
-          trend={{
-            value: pipelines.filter((p) => p.status === "Active").length,
-            isPositive:
-              pipelines.filter((p) => p.status === "Active").length > 0,
-          }}
-        />
-        <StatisticCard
-          title="Average Success Rate"
-          value={`${(pipelines.reduce((acc, p) => acc + p.performance.successRate, 0) / pipelines.length).toFixed(1)}%`}
-          trend={{
-            value:
-              pipelines.reduce((acc, p) => acc + p.performance.successRate, 0) /
-              pipelines.length,
-            isPositive:
-              pipelines.reduce((acc, p) => acc + p.performance.successRate, 0) /
-                pipelines.length >
-              95,
-          }}
-        />
-        <StatisticCard
-          title="Total Errors (24h)"
-          value={pipelines
-            .reduce((acc, p) => acc + p.performance.errorCount, 0)
-            .toString()}
-          trend={{
-            value: pipelines.reduce(
-              (acc, p) => acc + p.performance.errorCount,
-              0,
-            ),
-            isPositive:
-              pipelines.reduce((acc, p) => acc + p.performance.errorCount, 0) <
-              5,
-          }}
-        />
-      </div>
-
       {/* Pipeline Flow Visualization */}
       <Card className="p-4">
         <h2 className="text-lg font-semibold mb-4">Pipeline Flow</h2>
-        <div className="h-[300px]">
+        <div className="h-[600px]">
           <OntologyGraph
             classes={[
               { id: "source", name: "Data Sources" },
@@ -182,108 +405,137 @@ export default function ConfigureDataPipeline() {
           />
         ))}
 
-      {/* Pipeline List */}
-      <Card className="p-4">
-        <div className="mb-4">
-          <SearchBar
-            onSearch={(query) => console.log("Search:", query)}
-            placeholder="Search pipelines..."
-          />
-        </div>
-
-        <Table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Source → Target</th>
-              <th>Schedule</th>
-              <th>Last Run</th>
-              <th>Performance</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pipelines.map((pipeline) => (
-              <tr key={pipeline.id}>
-                <td>{pipeline.name}</td>
-                <td>{pipeline.type}</td>
-                <td>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      pipeline.status === "Active"
-                        ? "bg-green-100 text-green-800"
-                        : pipeline.status === "Paused"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {pipeline.status}
-                  </span>
-                </td>
-                <td>
-                  {pipeline.source} → {pipeline.target}
-                </td>
-                <td>{pipeline.schedule}</td>
-                <td>{pipeline.lastRun}</td>
-                <td>
-                  <div className="text-xs">
-                    <div>Success: {pipeline.performance.successRate}%</div>
-                    <div>
-                      Avg Time: {pipeline.performance.avgProcessingTime}s
-                    </div>
-                    <div>Errors: {pipeline.performance.errorCount}</div>
-                  </div>
-                </td>
-                <td>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => console.log("Run now:", pipeline.id)}
-                    >
-                      Run Now
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => console.log("Edit:", pipeline.id)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedPipeline(pipeline);
-                        setShowDeleteDialog(true);
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </Card>
-
       {/* Create Pipeline Dialog */}
-      <ConfirmDialog
-        isOpen={showAddDialog}
-        onCancel={() => setShowAddDialog(false)}
-        onConfirm={() => {
-          setShowAddDialog(false);
-          setNotification({
-            type: "success",
-            message: "Pipeline created successfully",
-          });
-        }}
+      <Dialog
+        open={showAddDialog}
+        setOpen={setShowAddDialog}
         title="Create New Pipeline"
-        message="Please provide the details of the new pipeline."
-      />
+        contentClassName="max-w-4xl max-h-[80vh] overflow-y-auto"
+        showFooter={false}
+      >
+        <AppForm
+          schema={CreatePipelineSchema}
+          onSubmit={(values) => {
+            createPipeline({
+              name: values.name,
+              pipeline_type: values.pipeline_type,
+              description: values.description,
+              steps: values.steps,
+              schedule: values.schedule,
+            });
+          }}
+          fields={(formData) => [
+            {
+              label: "Pipeline Name",
+              name: "name",
+              type: "text",
+              placeholder: "Enter pipeline name",
+              required: true,
+            },
+            {
+              label: "Description",
+              name: "description",
+              type: "textarea",
+              placeholder: "Enter pipeline description",
+            },
+            {
+              label: "Type",
+              name: "pipeline_type",
+              type: "select",
+              placeholder: "Select pipeline type",
+              options: [
+                { label: "Loading", value: PipelineType.LOADING },
+                { label: "Complete", value: PipelineType.COMPLETE },
+                { label: "Extraction", value: PipelineType.EXTRACTION },
+                { label: "Transformation", value: PipelineType.TRANSFORMATION },
+              ],
+              required: true,
+            },
+            {
+              label: "Schedule",
+              name: "schedule",
+              type: "text",
+              placeholder: "Enter schedule (e.g., daily, hourly)",
+            },
+            {
+              label: "Steps",
+              name: "steps",
+              type: "array",
+              placeholder: "Enter steps in JSON format",
+              arrayItemLabel: "Step",
+              fields: [
+                {
+                  label: "Step Name",
+                  name: "name",
+                  type: "text",
+                  placeholder: "Enter step name",
+                  required: true,
+                },
+                {
+                  label: "Step Type",
+                  name: "type",
+                  placeholder: "Select step type",
+                  type: "select",
+                  options: [
+                    {
+                      label: "Api Fetcher",
+                      value: PipelineStepType.API_FETCHER,
+                    },
+                    {
+                      label: "Custom Python",
+                      value: PipelineStepType.CUSTOM_PYTHON,
+                    },
+                    {
+                      label: "Fibo Mapper",
+                      value: PipelineStepType.FIBO_MAPPER,
+                    },
+                    {
+                      label: "File Reader",
+                      value: PipelineStepType.FILE_READER,
+                    },
+                    {
+                      label: "Knowledge Graph Writer",
+                      value: PipelineStepType.KNOWLEDGE_GRAPH_WRITER,
+                    },
+                    {
+                      label: "LLM Entity Extractor",
+                      value: PipelineStepType.LLM_ENTITY_EXTRACTOR,
+                    },
+                    {
+                      label: "Text Extractor",
+                      value: PipelineStepType.TEXT_EXTRACTOR,
+                    },
+                    {
+                      label: "Entity Resolution",
+                      value: PipelineStepType.ENTITY_RESOLUTION,
+                    },
+                    {
+                      label: "Database Extractor",
+                      value: PipelineStepType.DATABASE_EXTRACTOR,
+                    },
+                  ],
+                  required: true,
+                },
+                {
+                  label: "Configuration",
+                  name: "config",
+                  type: "object",
+                  placeholder: "Enter step configuration in JSON format",
+                  fields: getPipelineStepConfig(
+                    formData.steps?.type as PipelineStepType,
+                  ),
+                },
+                {
+                  label: "Description",
+                  name: "description",
+                  type: "textarea",
+                  placeholder: "Enter step description",
+                },
+              ],
+            },
+          ]}
+        />
+      </Dialog>
 
       {/* Delete Pipeline Dialog */}
       <DeleteDialog
@@ -291,7 +543,6 @@ export default function ConfigureDataPipeline() {
         onCancel={() => setShowDeleteDialog(false)}
         onConfirm={() => {
           if (selectedPipeline) {
-            setPipelines(pipelines.filter((p) => p.id !== selectedPipeline.id));
             setShowDeleteDialog(false);
             setNotification({
               type: "success",

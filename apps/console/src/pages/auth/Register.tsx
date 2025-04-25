@@ -1,17 +1,17 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
-import {
-  Card,
-  Button,
-  Input,
-  ErrorNotification,
-  SuccessNotification,
-  AppForm,
-} from "@vbkg/ui";
+import { useRegister } from "@vbkg/api-client";
 import { registerSchema } from "@vbkg/schemas";
+import { AppForm, Card } from "@vbkg/ui";
+import { Link } from "react-router";
 
 export default function Register() {
-  const navigate = useNavigate();
+  const { mutate: register } = useRegister({
+    onSuccess: () => {
+      console.log("Registration successful");
+    },
+    onError: (error) => {
+      console.error("Registration failed", error);
+    },
+  });
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12">
@@ -54,8 +54,12 @@ export default function Register() {
               },
             ]}
             onSubmit={(values) => {
-              console.log(values);
-              // Simulate a successful registration
+              register({
+                email: values.email,
+                password: values.password,
+				full_name: values.fullname,
+                roles: ["admin"],
+              });
             }}
             schema={registerSchema}
           />

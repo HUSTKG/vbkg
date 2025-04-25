@@ -1,4 +1,3 @@
-// pages/admin/ConfigureDataSource.tsx
 import {
     AppLayout,
     Button,

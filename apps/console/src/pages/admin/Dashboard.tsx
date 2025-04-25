@@ -1,4 +1,3 @@
-// packages/console/src/pages/admin/Dashboard.tsx
 import {
   Button,
   Card,

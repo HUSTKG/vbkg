@@ -1,11 +1,13 @@
 // packages/console/src/routes/index.tsx
-import { createBrowserRouter, Navigate, RouteObject } from "react-router";
 import { lazy, Suspense } from "react";
+import { createBrowserRouter, Navigate, RouteObject } from "react-router";
 
 // Layouts
-import ConsoleLayout from "./layouts/ConsoleLayout";
-import AuthLayout from "./layouts/AuthLayout";
+import { getSession } from "@vbkg/utils";
 import AdminLayout from "./layouts/AdminLayout";
+import AuthLayout from "./layouts/AuthLayout";
+import ConsoleLayout from "./layouts/ConsoleLayout";
+import AdvancedErrorElement from "./pages/Error";
 
 // Auth Pages
 const LoginPage = lazy(() => import("./pages/auth/Login"));
@@ -55,8 +57,9 @@ const RoleGuard = ({
   children: React.ReactNode;
   allowedRoles: string[];
 }) => {
-  const userRole = localStorage.getItem("role"); // Replace with your auth logic
-  if (!userRole || !allowedRoles.includes(userRole)) {
+  const session = getSession();
+  const userRole = session?.user?.roles;
+  if (!userRole || !allowedRoles.some((role) => userRole?.includes(role))) {
     return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
@@ -247,6 +250,7 @@ const routes: RouteObject[] = [
         ),
       },
     ],
+	errorElement: <AdvancedErrorElement/> 
   },
 
   // 404 Route

@@ -1,7 +1,13 @@
 // Utility
 export * from './lib/utils';
 
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
+
+
 import "./styles/global.css";
+
+export * from './components/icons';
 
 // Layout Components
 export { default as AppLayout } from './layouts/main';
@@ -63,6 +69,8 @@ export {
 export type { EmptyStateProps, EmptyStateType } from './components/empty-state';
 
 export { default as AppForm } from './components/form';
+
+export { default as Dialog } from './components/dialog';
 
 // Shadcn Components
 // These are re-exports from the shadcn components we've installed

@@ -1,13 +1,12 @@
-// pages/admin/ConfigureDataPipeline.tsx
 import {
-    AppLayout,
-    Button,
-    Card,
-    ConfirmDialog,
-    DeleteDialog,
-    OntologyGraph,
-    ResultCard,
-    StatisticCard
+  AppLayout,
+  Button,
+  Card,
+  ConfirmDialog,
+  DeleteDialog,
+  OntologyGraph,
+  ResultCard,
+  StatisticCard,
 } from "@vbkg/ui";
 import { useState } from "react";
 

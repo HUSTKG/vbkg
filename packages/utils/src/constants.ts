@@ -15,7 +15,8 @@ export const API_ENDPOINTS = {
   UPLOAD_FILE: (id: string) => `/datasources/${id}/upload`,
   READ_FILE_UPLOADS: "/datasources/files",
   READ_FILE_UPLOAD: (id: string) => `/datasources/files/${id}`,
-  UPDATE_FILE_STATUS: (file_id: string) => `/datasources/files/${file_id}/status`,
+  UPDATE_FILE_STATUS: (file_id: string) =>
+    `/datasources/files/${file_id}/status`,
   DELETE_FILE_UPLOAD: (file_id: string) => `/datasources/files/${file_id}`,
   READ_FILE_CONTENT: (file_id: string) =>
     `/datasources/files/${file_id}/content`,
@@ -172,3 +173,5 @@ export const DATE_FORMATS = {
   SHORT: "PP", // e.g., "Apr 13, 2024"
   TIME: "p", // e.g., "12:00 PM"
 } as const;
+
+export const SESSION_STORAGE_KEY = "vbkg_session";

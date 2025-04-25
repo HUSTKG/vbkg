@@ -1,11 +1,83 @@
+import { SourceType } from "@vbkg/types";
 import { z } from "zod";
+import { jsonSchema } from "./common";
+
+const _FileConnectionDetailsSchema = z.object({
+  source_type: z.literal(SourceType.FILE), // Type must be "file"
+  connection_details: z.object({
+    file_path: z.string(), // File path must be a string
+    file_format: z
+      .string()
+      .describe("Format of the file (e.g., csv, json, txt, pdf)"),
+    encoding: z.string().optional(), // Optional encoding for the file
+    delimiter: z.string().optional(), // Optional delimiter for the file
+  }),
+  name: z.string().min(1), // Name must be a non-empty string
+  description: z.string().optional(), // Description is optional
+  credentials: z.record(z.any()), // Optional credentials for the data source
+});
+
+const _DatabaseConnectionDetailsSchema = z.object({
+  source_type: z.literal(SourceType.DATABASE), // Type must be "database"
+  connection_details: z.object({
+    host: z.string(), // Host must be a string
+    port: z.number().int(), // Port must be an integer
+    database: z.string(), // Database name must be a string
+    username: z.string(), // Username must be a string
+    password: z.string().optional(), // Optional password for the database
+    db_type: z.enum(["postgres", "mysql", "mssql"]), // Database type must be one of the specified enums
+    ssl: z.boolean().default(false), // SSL connection option, default is false
+    query: z.string().optional(), // Optional SQL query to execute
+    table: z.string().optional(), // Optional table name to connect to
+  }),
+  name: z.string().min(1), // Name must be a non-empty string
+  description: z.string().optional(), // Description is optional
+  credentials: z.record(z.any()), // Optional credentials for the data source
+});
+
+const _ApiConnectionDetailsSchema = z.object({
+  source_type: z.literal(SourceType.API), // Type must be "api"
+  connection_details: z.object({
+    url: z.string().url(), // URL must be a valid URL
+    method: z.enum(["GET", "POST", "PUT", "DELETE"]), // HTTP method must be one of the specified
+    headers: z.record(z.string()).optional(), // Optional headers for the API request
+    query_params: z.record(z.string()).optional(), // Optional query parameters for the API request
+    body: jsonSchema.optional(), // Optional body for the API request
+    auth_type: z.enum(["BASIC", "BEARER"]).optional(), // Optional authentication type
+    auth_config: z.record(z.any()).optional(), // Optional authentication configuration
+  }),
+  name: z.string().min(1), // Name must be a non-empty string
+  description: z.string().optional(), // Description is optional
+  credentials: z.record(z.any()), // Optional credentials for the data source
+});
+
+const _URLConnectionDetailsSchema = z.object({
+  source_type: z.literal(SourceType.URL), // Type must be "url"
+  connection_details: z.object({
+    url: z.string().url(), // URL must be a valid URL
+    scrape_config: z.record(z.any()).optional(), // Optional scraping configuration
+    headers: z.record(z.string()).optional(), // Optional headers for the URL request
+  }),
+  name: z.string().min(1), // Name must be a non-empty string
+  description: z.string().optional(), // Description is optional
+  credentials: z.record(z.any()), // Optional credentials for the data source
+});
 
 // Schema for creating a data source
-export const CreateDataSourceSchema = z.object({
-  name: z.string().min(1), // Name is required
-  type: z.enum(["TYPE_A", "TYPE_B"]), // Example enum for source type
-  config: z.record(z.string(), z.any()).optional(), // Config is optional
-});
+export const CreateDataSourceSchema = z
+  .discriminatedUnion("source_type", [
+    _FileConnectionDetailsSchema,
+    _DatabaseConnectionDetailsSchema,
+    _ApiConnectionDetailsSchema,
+    _URLConnectionDetailsSchema,
+  ])
+  .refine((data) => {
+    // Custom validation to ensure that if credentials are provided, they must be valid
+    if (data.credentials) {
+      return Object.keys(data.credentials).length > 0;
+    }
+    return true;
+  });
 
 // Schema for updating a data source
 export const UpdateDataSourceSchema = z.object({

@@ -1,67 +1,318 @@
-// packages/console/src/pages/admin/ConfigureDataSource.tsx
-import { useState } from "react";
+import { useCreateDatasource, useDatasources } from "@vbkg/api-client";
+import { CreateDataSourceSchema } from "@vbkg/schemas";
+import { DataSource, SourceType } from "@vbkg/types";
 import {
-  Card,
+  AppForm,
   Button,
-  Table,
-  SearchBar,
-  StatisticCard,
-  EntityCard,
-  DeleteDialog,
+  Card,
   ConfirmDialog,
-  SuccessNotification,
+  DeleteDialog,
+  Dialog,
+  EntityCard,
   ErrorNotification,
+  SearchBar,
+  SuccessNotification,
 } from "@vbkg/ui";
+import { useState } from "react";
+import { FieldConfig } from "../../../../../packages/ui/dist/components/form";
+import DataTableExample from "./test";
 
-interface DataSource {
-  id: string;
-  name: string;
-  type: "REST API" | "Database" | "File System";
-  status: "Active" | "Inactive" | "Error";
-  connString: string;
-  lastSync: string;
-  nextSync: string;
-  organization: string;
-  metrics: {
-    entitiesCount: number;
-    syncSuccess: number;
-    avgResponseTime: number;
-  };
-}
+const getConnectionFields = (type: SourceType): FieldConfig[] => {
+  switch (type) {
+    case SourceType.FILE:
+      return [
+        {
+          label: "File Path",
+          name: "file_path",
+          type: "text",
+          placeholder: "Enter file path",
+          required: true,
+        },
+        {
+          label: "File Format",
+          name: "file_format",
+          type: "select",
+          placeholder: "Select file format",
+          options: [
+            { value: "csv", label: "CSV" },
+            { value: "json", label: "JSON" },
+            { value: "txt", label: "TXT" },
+            { value: "pdf", label: "PDF" },
+          ],
+          required: true,
+        },
+        {
+          label: "Encoding",
+          name: "encoding",
+          type: "text",
+          placeholder: "Enter encoding (optional)",
+          required: false,
+        },
+        {
+          label: "Delimiter",
+          name: "delimiter",
+          type: "text",
+          placeholder: "Enter delimiter (optional)",
+          required: false,
+        },
+      ];
+    case SourceType.DATABASE:
+      return [
+        {
+          label: "Host",
+          name: "host",
+          type: "text",
+          placeholder: "Enter database host",
+          required: true,
+        },
+        {
+          label: "Port",
+          name: "port",
+          type: "number",
+          placeholder: "Enter database port",
+          required: true,
+        },
+        {
+          label: "Database Name",
+          name: "database",
+          type: "text",
+          placeholder: "Enter database name",
+          required: true,
+        },
+        {
+          label: "Username",
+          name: "username",
+          type: "text",
+          placeholder: "Enter username",
+          required: true,
+        },
+        {
+          label: "Password",
+          name: "password",
+          type: "password",
+          placeholder: "Enter password (optional)",
+          required: false,
+        },
+        {
+          label: "Database Type",
+          name: "db_type",
+          type: "select",
+          placeholder: "Select database type",
+          options: [
+            { value: "postgres", label: "PostgreSQL" },
+            { value: "mysql", label: "MySQL" },
+            { value: "mssql", label: "MS SQL Server" },
+          ],
+          required: true,
+        },
+        {
+          label: "Use SSL",
+          name: "ssl",
+          type: "switch",
+          description: "Enable secure connection",
+          defaultValue: false,
+          required: false,
+        },
+        {
+          label: "SQL Query",
+          name: "query",
+          type: "textarea",
+          placeholder: "Enter SQL query (optional)",
+          required: false,
+        },
+        {
+          label: "Table Name",
+          name: "table",
+          type: "text",
+          placeholder: "Enter table name (optional)",
+          required: false,
+        },
+      ];
+    case SourceType.API:
+      return [
+        {
+          label: "API URL",
+          name: "url",
+          type: "text",
+          placeholder: "Enter API URL (e.g., https://api.example.com/v1)",
+          required: true,
+        },
+        {
+          label: "HTTP Method",
+          name: "method",
+          placeholder: "Select HTTP method",
+          type: "select",
+          options: [
+            { value: "GET", label: "GET" },
+            { value: "POST", label: "POST" },
+            { value: "PUT", label: "PUT" },
+            { value: "DELETE", label: "DELETE" },
+          ],
+          required: true,
+        },
+        {
+          label: "Headers",
+          name: "headers",
+          type: "object",
+          placeholder: "Enter headers",
+          required: false,
+          fields: [
+            {
+              label: "Content-Type",
+              name: "Content-Type",
+              type: "text",
+              placeholder: "application/json",
+              required: false,
+            },
+            {
+              label: "Accept",
+              name: "Accept",
+              type: "text",
+              placeholder: "application/json",
+              required: false,
+            },
+          ],
+        },
+        {
+          label: "Query Parameters",
+          name: "query_params",
+          type: "object",
+          placeholder: "Enter query parameters",
+          required: false,
+        },
+        {
+          label: "Request Body",
+          name: "body",
+          type: "textarea",
+          placeholder: "Enter request body (optional)",
+          required: false,
+        },
+        {
+          label: "Authentication Type",
+          name: "auth_type",
+          type: "select",
+          placeholder: "Select authentication type",
+          options: [
+            { value: "BASIC", label: "Basic Auth" },
+            { value: "BEARER", label: "Bearer Token" },
+          ],
+          required: false,
+        },
+        {
+          label: "Authentication Config",
+          name: "auth_config",
+          type: "object",
+          required: false,
+          fields: [
+            {
+              label: "Username",
+              name: "username",
+              type: "text",
+              placeholder: "Enter username",
+              required: false,
+            },
+            {
+              label: "Password",
+              name: "password",
+              type: "password",
+              placeholder: "Enter password",
+              required: false,
+            },
+            {
+              label: "Token",
+              name: "token",
+              type: "text",
+              placeholder: "Enter bearer token",
+              required: false,
+            },
+          ],
+        },
+      ];
+    case SourceType.URL:
+      return [
+        {
+          label: "URL",
+          name: "url",
+          type: "text",
+          placeholder: "Enter URL (e.g., https://example.com/data)",
+          required: true,
+        },
+        {
+          label: "Headers",
+          name: "headers",
+          type: "object",
+          placeholder: "Enter headers",
+          required: false,
+          fields: [
+            {
+              label: "User-Agent",
+              name: "User-Agent",
+              type: "text",
+              placeholder: "Mozilla/5.0...",
+              required: false,
+            },
+            {
+              label: "Accept",
+              name: "Accept",
+              type: "text",
+              placeholder: "text/html,application/xhtml+xml",
+              required: false,
+            },
+          ],
+        },
+        {
+          label: "Scrape Configuration",
+          name: "scrape_config",
+          type: "object",
+          required: false,
+          fields: [
+            {
+              label: "CSS Selector",
+              name: "selector",
+              type: "text",
+              placeholder: "Enter CSS selector",
+              required: false,
+            },
+            {
+              label: "XPath",
+              name: "xpath",
+              type: "text",
+              placeholder: "Enter XPath",
+              required: false,
+            },
+            {
+              label: "Extract Tables",
+              name: "extract_tables",
+              type: "switch",
+              defaultValue: false,
+              required: false,
+            },
+            {
+              label: "Extract Links",
+              name: "extract_links",
+              type: "switch",
+              defaultValue: false,
+              required: false,
+            },
+          ],
+        },
+      ];
+    default:
+      return [];
+  }
+};
 
 export default function ConfigureDataSource() {
-  const [dataSources, setDataSources] = useState<DataSource[]>([
-    {
-      id: "1",
-      name: "Product Database",
-      type: "Database",
-      status: "Active",
-      connString: "postgresql://localhost:5432/products",
-      lastSync: "2024-04-16 10:30",
-      nextSync: "2024-04-16 11:30",
-      organization: "Company A",
-      metrics: {
-        entitiesCount: 15000,
-        syncSuccess: 99.5,
-        avgResponseTime: 120,
-      },
+  const { mutate: createDatasource } = useCreateDatasource({
+    onSuccess: (data) => {
+      console.log(data);
     },
-    {
-      id: "2",
-      name: "External API",
-      type: "REST API",
-      status: "Active",
-      connString: "https://api.external.com/v1",
-      lastSync: "2024-04-16 10:15",
-      nextSync: "2024-04-16 11:15",
-      organization: "Company B",
-      metrics: {
-        entitiesCount: 8000,
-        syncSuccess: 98.2,
-        avgResponseTime: 250,
-      },
+    onError: (error) => {
+      console.error("Error creating data source", error);
     },
-  ]);
+  });
+
+  const dataSources = useDatasources({})?.data?.data || [];
 
   const [selectedSource, setSelectedSource] = useState<DataSource | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -86,57 +337,6 @@ export default function ConfigureDataSource() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Data Sources</h1>
         <Button onClick={() => setShowAddDialog(true)}>Add Data Source</Button>
-      </div>
-
-      {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatisticCard
-          title="Total Sources"
-          value={dataSources.length.toString()}
-          trend={{
-            value: dataSources.length,
-            isPositive: dataSources.length > 0,
-          }}
-        />
-        <StatisticCard
-          title="Active Sources"
-          value={dataSources
-            .filter((s) => s.status === "Active")
-            .length.toString()}
-          trend={{
-            value: dataSources.filter((s) => s.status === "Active").length,
-            isPositive:
-              dataSources.filter((s) => s.status === "Active").length > 0,
-          }}
-        />
-        <StatisticCard
-          title="Total Entities"
-          value={dataSources
-            .reduce((acc, s) => acc + s.metrics.entitiesCount, 0)
-            .toLocaleString()}
-          trend={{
-            value: dataSources.reduce(
-              (acc, s) => acc + s.metrics.entitiesCount,
-              0,
-            ),
-            isPositive:
-              dataSources.reduce((acc, s) => acc + s.metrics.entitiesCount, 0) >
-              0,
-          }}
-        />
-        <StatisticCard
-          title="Avg Sync Success"
-          value={`${(dataSources.reduce((acc, s) => acc + s.metrics.syncSuccess, 0) / dataSources.length).toFixed(1)}%`}
-          trend={{
-            value:
-              dataSources.reduce((acc, s) => acc + s.metrics.syncSuccess, 0) /
-              dataSources.length,
-            isPositive:
-              dataSources.reduce((acc, s) => acc + s.metrics.syncSuccess, 0) /
-                dataSources.length >
-              95,
-          }}
-        />
       </div>
 
       {/* Notifications */}
@@ -168,17 +368,10 @@ export default function ConfigureDataSource() {
             type="data-source"
             name={source.name}
             properties={[
-              { key: "Type", value: source.type },
-              { key: "Status", value: source.status },
-              { key: "Organization", value: source.organization },
-              { key: "Last Sync", value: source.lastSync },
+              { key: "Type", value: source.source_type },
               {
-                key: "Entities",
-                value: source.metrics.entitiesCount.toLocaleString(),
-              },
-              {
-                key: "Success Rate",
-                value: `${source.metrics.syncSuccess}%`,
+                key: "Status",
+                value: source.is_active ? "Active" : "Inactive",
               },
             ]}
           />
@@ -193,91 +386,88 @@ export default function ConfigureDataSource() {
             placeholder="Search data sources..."
           />
         </div>
-
-        <Table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Organization</th>
-              <th>Last Sync</th>
-              <th>Next Sync</th>
-              <th>Metrics</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dataSources.map((source) => (
-              <tr key={source.id}>
-                <td>{source.name}</td>
-                <td>{source.type}</td>
-                <td>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      source.status === "Active"
-                        ? "bg-green-100 text-green-800"
-                        : source.status === "Inactive"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {source.status}
-                  </span>
-                </td>
-                <td>{source.organization}</td>
-                <td>{source.lastSync}</td>
-                <td>{source.nextSync}</td>
-                <td>
-                  <div className="text-xs">
-                    <div>
-                      Entities: {source.metrics.entitiesCount.toLocaleString()}
-                    </div>
-                    <div>Success: {source.metrics.syncSuccess}%</div>
-                    <div>Avg Time: {source.metrics.avgResponseTime}ms</div>
-                  </div>
-                </td>
-                <td>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => console.log("Sync now:", source.id)}
-                    >
-                      Sync Now
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedSource(source);
-                        setShowDeleteDialog(true);
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
       </Card>
 
       {/* Add Data Source Dialog */}
-      <ConfirmDialog
-        message="Please fill in the details to add a new data source."
-        isOpen={showAddDialog}
-        onCancel={() => setShowAddDialog(false)}
-        onConfirm={() => {
-          setShowAddDialog(false);
-          setNotification({
-            type: "success",
-            message: "Data source added successfully",
-          });
-        }}
+      <Dialog
+        open={showAddDialog}
+        setOpen={setShowAddDialog}
         title="Add Data Source"
-      />
+        showFooter={false}
+        contentClassName="max-w-4xl max-h-[80vh] overflow-y-auto w-screen"
+      >
+        <div>
+          <AppForm
+            fields={(formData) => [
+              {
+                label: "Name",
+                name: "name",
+                type: "text",
+                placeholder: "Enter data source name",
+                required: true,
+              },
+              {
+                label: "Type",
+                name: "source_type",
+                type: "select",
+                placeholder: "Select data source type",
+                options: [
+                  { value: SourceType.API, label: "REST API" },
+                  { value: SourceType.DATABASE, label: "Database" },
+                  { value: SourceType.FILE, label: "File" },
+                  { value: SourceType.URL, label: "URL" },
+                ],
+                required: true,
+              },
+              {
+                label: "Description",
+                name: "description",
+                type: "textarea",
+                placeholder: "Enter description",
+                required: false,
+              },
+              {
+                label: "Connection Details",
+                name: "connection_details",
+                type: "object",
+                placeholder: "Enter connection details",
+                required: true,
+                fields: formData?.source_type
+                  ? getConnectionFields(formData.source_type)
+                  : [],
+              },
+              {
+                label: "Credentials",
+                name: "credentials",
+                type: "object",
+                placeholder: "Enter credentials",
+                required: false,
+                collapsible: true,
+                fields: [
+                  {
+                    label: "OAuth Token",
+                    name: "oauth_token",
+                    type: "text",
+                    placeholder: "Enter OAuth token",
+                    required: false,
+                  },
+                ],
+              },
+            ]}
+            schema={CreateDataSourceSchema}
+            watchFields={["source_type"]}
+            onSubmit={(values) => {
+              createDatasource({
+                name: values.name,
+                description: values.description,
+                source_type: values.source_type,
+                credentials: values.credentials,
+                connection_details: values.connection_details,
+              });
+            }}
+          />
+        </div>
+      </Dialog>
 
       {/* Test Connection Dialog */}
       <ConfirmDialog
@@ -294,9 +484,6 @@ export default function ConfigureDataSource() {
         onCancel={() => setShowDeleteDialog(false)}
         onConfirm={() => {
           if (selectedSource) {
-            setDataSources((prev) =>
-              prev.filter((s) => s.id !== selectedSource.id),
-            );
             setShowDeleteDialog(false);
             setNotification({
               type: "success",

@@ -12,7 +12,18 @@ export interface ILoginJsonRequest {
   password: string;
 }
 
-export interface ILoginJsonResponse extends ApiResponse<Token> {}
+export interface ILoginJsonResponse
+  extends ApiResponse<
+    Token & {
+      user: {
+        email: string;
+        id: string;
+        full_name: string;
+        is_active: boolean;
+        roles: string[];
+      };
+    }
+  > {}
 
 export interface IRegisterRequest extends UserCreate {}
 

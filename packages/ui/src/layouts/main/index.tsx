@@ -16,8 +16,9 @@ export interface MenuSubItem {
 
 export interface MenuItem {
   title: string;
+  path?: string;
   icon: React.ReactNode;
-  submenu: MenuSubItem[];
+  submenu?: MenuSubItem[];
 }
 
 export interface AppLayoutProps {
@@ -27,7 +28,14 @@ export interface AppLayoutProps {
   onNotificationClick?: () => void;
   notificationCount?: number;
   userName?: string;
-  userAvatar?: React.ReactNode;
+  userAvatar?: string;
+  userEmail?: string;
+  onLogout?: () => void;
+  profileMenuItems?: {
+	icon: React.ReactNode;
+	label: string;
+	onClick: () => void;
+  }[];
 }
 
 // Default menu items that can be overridden via props
@@ -72,6 +80,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   notificationCount = 0,
   userName = "User",
   userAvatar,
+  onLogout,
+  userEmail,
+  profileMenuItems
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
@@ -86,7 +97,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       <div 
         className={cn(
           "flex-1 transition-all duration-300",
-          isSidebarOpen ? 'ml-64' : 'ml-20'
+          isSidebarOpen ? 'pl-64' : 'pl-20'
         )}
       >
         {/* Top Navigation */}
@@ -97,6 +108,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({
 		  notificationCount={notificationCount}
 		  userName={userName}
 		  userAvatar={userAvatar}
+		  isSidebarOpen={isSidebarOpen}
+		  userEmail={userEmail}
+		  onLogout={onLogout}
+		  profileMenuItems={profileMenuItems}
 		  />
         {/* Page Content */}
         <main className="pt-16 h-full overflow-auto">

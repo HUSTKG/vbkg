@@ -1,15 +1,30 @@
 import { AppForm, Card } from "@vbkg/ui";
 import { loginSchema } from "@vbkg/schemas";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useLoginJson } from "@vbkg/api-client";
+import { setSession } from "@vbkg/utils";
 
 export default function Login() {
+  const navigate = useNavigate();
   const { mutate: login } = useLoginJson({
     onSuccess: (data) => {
-      console.log(data);
+      setSession({
+        accessToken: data.data.access_token,
+        user: {
+          id: data.data.user.id,
+          name: data.data.user.full_name,
+          email: data.data.user.email,
+          roles: data.data.user.roles,
+        },
+      });
+      if (data.data.user.roles.includes("admin")) {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     },
     onError: (error) => {
-      console.error(error);
+      alert("Login failed: " + error.message);
     },
   });
 

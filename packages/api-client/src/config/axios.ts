@@ -5,6 +5,23 @@ import { getConfig } from "./apiConfig";
 export const createApiInstance = () => {
   const config = getConfig();
 
+  if (!config.baseUrl) {
+    throw new Error("Base URL is required");
+  }
+
+  const defaultHeaders = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+
+  // Merge default headers with user-defined headers
+  config.headers = { ...defaultHeaders, ...config.headers };
+
+  // Add bearer token if provided
+  if (config.bearerToken) {
+    config.headers.Authorization = `Bearer ${config.bearerToken}`;
+  }
+
   const api = axios.create({
     baseURL: config.baseUrl,
     headers: config.headers,

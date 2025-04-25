@@ -16,7 +16,7 @@ export interface SearchBarProps {
   onClear?: () => void;
   showFilter?: boolean;
   onFilterClick?: () => void;
-  history?: SearchHistory[];
+  defaultHistory?: SearchHistory[];
   onHistoryItemClick?: (item: SearchHistory) => void;
   className?: string;
   initialValue?: string;
@@ -33,7 +33,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   onClear,
   showFilter = false,
   onFilterClick,
-  history = [],
+  defaultHistory = [],
   onHistoryItemClick,
   className,
   initialValue = '',
@@ -44,9 +44,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   const [query, setQuery] = useState(initialValue);
   const [showHistory, setShowHistory] = useState(false);
-  const [localHistory, setLocalHistory] = useState<SearchHistory[]>(history);
+  const [localHistory, setLocalHistory] = useState<SearchHistory[]>(defaultHistory);
   const searchBarRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  //// Update local defaultHistory when defaultHistory prop changes
+  //useEffect(() => {
+  //  setLocalHistory(defaultHistory);
+  //}, [defaultHistory]);
 
   // Set focus on input when autoFocus is true
   useEffect(() => {
@@ -55,12 +60,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
   }, [autoFocus]);
 
-  // Update local history when history prop changes
-  useEffect(() => {
-    setLocalHistory(history);
-  }, [history]);
-
-  // Close history dropdown when clicking outside
+  // Close defaultHistory dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node)) {
@@ -96,7 +96,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           timestamp: new Date().toISOString(),
         };
         
-        // Check if this query already exists in history
+        // Check if this query already exists in defaultHistory
         const exists = localHistory.some(item => item.text.toLowerCase() === query.toLowerCase());
         
         if (!exists) {
@@ -211,7 +211,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         </div>
       </form>
       
-      {/* Search history and suggestions dropdown */}
+      {/* Search defaultHistory and suggestions dropdown */}
       {showHistory && (localHistory.length > 0 || filteredSuggestions.length > 0) && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10 max-h-80 overflow-y-auto">
           {localHistory.length > 0 && (
