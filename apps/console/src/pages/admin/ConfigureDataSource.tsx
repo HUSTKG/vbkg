@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   ConfirmDialog,
+  CustomDrawer,
   DeleteDialog,
   Dialog,
   EntityCard,
@@ -15,7 +16,6 @@ import {
 } from "@vbkg/ui";
 import { useState } from "react";
 import { FieldConfig } from "../../../../../packages/ui/dist/components/form";
-import DataTableExample from "./test";
 
 const getConnectionFields = (type: SourceType): FieldConfig[] => {
   switch (type) {
@@ -389,7 +389,7 @@ export default function ConfigureDataSource() {
       </Card>
 
       {/* Add Data Source Dialog */}
-      <Dialog
+      <CustomDrawer
         open={showAddDialog}
         setOpen={setShowAddDialog}
         title="Add Data Source"

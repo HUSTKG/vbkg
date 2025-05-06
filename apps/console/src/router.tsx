@@ -250,7 +250,7 @@ const routes: RouteObject[] = [
         ),
       },
     ],
-	errorElement: <AdvancedErrorElement/> 
+    errorElement: <AdvancedErrorElement />,
   },
 
   // 404 Route

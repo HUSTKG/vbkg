@@ -8,11 +8,11 @@ import {
   DeleteDialog,
   Dialog,
   ErrorNotification,
+  FieldConfig,
   OntologyGraph,
   SuccessNotification,
 } from "@vbkg/ui";
 import { useState } from "react";
-import { FieldConfig } from "../../../../../packages/ui/dist/components/form";
 
 const getPipelineStepConfig = (step_type: PipelineStepType): FieldConfig[] => {
   switch (step_type) {
@@ -522,7 +522,7 @@ export default function ConfigureDataPipeline() {
                   type: "object",
                   placeholder: "Enter step configuration in JSON format",
                   fields: getPipelineStepConfig(
-                    formData.steps?.type as PipelineStepType,
+                    formData?.steps as PipelineStepType,
                   ),
                 },
                 {

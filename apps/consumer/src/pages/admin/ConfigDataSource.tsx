@@ -1,10 +1,10 @@
 import {
-    AppLayout,
-    Button,
-    ConfirmDialog,
-    DeleteDialog,
-    EntityCard,
-    StatisticCard
+  AppLayout,
+  Button,
+  ConfirmDialog,
+  DeleteDialog,
+  EntityCard,
+  StatisticCard,
 } from "@vbkg/ui";
 import { useState } from "react";
 
