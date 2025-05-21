@@ -1,19 +1,18 @@
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationOptions,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   ICreateDatasourceRequest,
   ICreateDatasourceResponse,
   IDeleteDatasourceRequest,
   IDeleteDatasourceResponse,
-  IDeleteFileUploadRequest,
-  IDeleteFileUploadResponse,
   IUpdateDatasourceRequest,
   IUpdateDatasourceResponse,
-  IUpdateFileStatusRequest,
-  IUpdateFileStatusResponse,
-  IUploadFileRequest,
-  IUploadFileResponse,
 } from "@vbkg/types";
 import { DatasourceService } from "../../services/datasource";
+import { QueryKeys } from "../../config/queryKeys";
 
 // Datasource CRUD operations
 export const useCreateDatasource = (
@@ -23,6 +22,7 @@ export const useCreateDatasource = (
     ICreateDatasourceRequest
   >,
 ) => {
+  const queryClient = useQueryClient();
   return useMutation<
     ICreateDatasourceResponse,
     Error,
@@ -30,6 +30,10 @@ export const useCreateDatasource = (
   >({
     mutationFn: DatasourceService.createDatasource,
     ...options,
+    onSuccess: (...params) => {
+      queryClient.invalidateQueries({ queryKey: QueryKeys.datasources.list() });
+      options?.onSuccess?.(...params);
+    },
   });
 };
 
@@ -47,6 +51,11 @@ export const useUpdateDatasource = (
   >({
     mutationFn: DatasourceService.updateDatasource,
     ...options,
+    onSuccess: (...params) => {
+      const queryClient = useQueryClient();
+      queryClient.invalidateQueries({ queryKey: QueryKeys.datasources.list() });
+      options.onSuccess?.(...params);
+    },
   });
 };
 
@@ -64,49 +73,10 @@ export const useDeleteDatasource = (
   >({
     mutationFn: DatasourceService.deleteDatasource,
     ...options,
-  });
-};
-
-// File upload operations
-export const useUploadFile = (
-  options: UseMutationOptions<IUploadFileResponse, Error, IUploadFileRequest>,
-) => {
-  return useMutation<IUploadFileResponse, Error, IUploadFileRequest>({
-    mutationFn: DatasourceService.uploadFile,
-    ...options,
-  });
-};
-
-export const useDeleteFileUpload = (
-  options: UseMutationOptions<
-    IDeleteFileUploadResponse,
-    Error,
-    IDeleteFileUploadRequest
-  >,
-) => {
-  return useMutation<
-    IDeleteFileUploadResponse,
-    Error,
-    IDeleteFileUploadRequest
-  >({
-    mutationFn: DatasourceService.deleteFileUpload,
-    ...options,
-  });
-};
-
-export const useUpdateFileStatus = (
-  options: UseMutationOptions<
-    IUpdateFileStatusResponse,
-    Error,
-    IUpdateFileStatusRequest
-  >,
-) => {
-  return useMutation<
-    IUpdateFileStatusResponse,
-    Error,
-    IUpdateFileStatusRequest
-  >({
-    mutationFn: DatasourceService.updateFileStatus,
-    ...options,
+    onSuccess: (...params) => {
+      const queryClient = useQueryClient();
+      queryClient.invalidateQueries({ queryKey: QueryKeys.datasources.list() });
+      options.onSuccess?.(...params);
+    },
   });
 };

@@ -12,14 +12,17 @@ export const API_ENDPOINTS = {
   READ_DATASOURCE: (id: string) => `/datasources/${id}`,
   UPDATE_DATASOURCE: (id: string) => `/datasources/${id}`,
   DELETE_DATASOURCE: (id: string) => `/datasources/${id}`,
-  UPLOAD_FILE: (id: string) => `/datasources/${id}/upload`,
-  READ_FILE_UPLOADS: "/datasources/files",
-  READ_FILE_UPLOAD: (id: string) => `/datasources/files/${id}`,
-  UPDATE_FILE_STATUS: (file_id: string) =>
-    `/datasources/files/${file_id}/status`,
-  DELETE_FILE_UPLOAD: (file_id: string) => `/datasources/files/${file_id}`,
-  READ_FILE_CONTENT: (file_id: string) =>
-    `/datasources/files/${file_id}/content`,
+
+  // File Upload
+  UPLOAD_FILE: "/upload",
+  READ_FILE_UPLOADS: "/upload/files",
+  READ_FILE_UPLOAD: (id: string) => `/upload/files/${id}`,
+  UPDATE_FILE_STATUS: (file_id: string) => `/upload/files/${file_id}/status`,
+  DELETE_FILE_UPLOAD: (file_id: string) => `/upload/files/${file_id}`,
+  READ_FILE_CONTENT: (file_id: string) => `/upload/files/${file_id}/content`,
+  GET_FILE_PUBLIC_URL: (file_id: string) => `/upload/files/${file_id}/public`,
+  UPDATE_FILE_METADATA: (file_id: string) =>
+    `/upload/files/${file_id}/metadata`,
 
   // Fibo
   READ_FIBO_CLASSES: "/fibo/classes",
@@ -74,11 +77,19 @@ export const API_ENDPOINTS = {
   UPDATE_PIPELINE: (id: string) => `/pipelines/${id}`,
   DELETE_PIPELINE: (id: string) => `/pipelines/${id}`,
   RUN_PIPELINE: (id: string) => `/pipelines/${id}/run`,
-  READ_PIPELINE_RUNS: "/pipelines/runs",
+  READ_PIPELINE_RUNS: (pipeline_id: string) => `/pipelines/${pipeline_id}/runs`,
   READ_PIPELINE_RUN: (run_id: string) => `/pipelines/runs/${run_id}`,
   GET_PIPELINE_RUN_STATUS: (run_id: string) =>
     `/pipelines/runs/${run_id}/status`,
   CANCEL_PIPELINE_RUN: (run_id: string) => `/pipelines/runs/${run_id}/cancel`,
+  READ_PIPELINE_STEP: (step_id: string, pipeline_id: string) =>
+    `/pipelines/${pipeline_id}/steps/${step_id}`,
+  READ_PIPELINE_STEPS: (pipeline_id: string) =>
+    `/pipelines/${pipeline_id}/steps`,
+  READ_PIPELINE_STEP_RUNS: (pipeline_run_id: string) =>
+    `/pipelines/runs/${pipeline_run_id}/steps`,
+  READ_PIPELINE_STEP_RUN: (step_run_id: string, pipeline_run_id: string) =>
+    `/pipelines/runs/${pipeline_run_id}/steps/${step_run_id}`,
 
   // Search
   SEARCH_ENTITIES: "/search/entities",
@@ -109,6 +120,9 @@ export const API_ENDPOINTS = {
   GET_VISUALIZATION_DATA: (id: string) => `/visualizations/${id}/data`,
   CREATE_DEFAULT_VISUALIZATION: "/visualizations/default",
   GET_VISUALIZATION_TEMPLATES: "/visualizations/template",
+
+  // Upload
+  INIT_UPLOAD_FILE: "/upload",
 } as const;
 
 // Common Constants

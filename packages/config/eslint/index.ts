@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ["eslint:recommended", "prettier"],
+  extends: ["eslint:recommended"],
   env: {
     node: true,
     es6: true,
@@ -15,7 +15,6 @@ module.exports = {
       extends: [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
-        "prettier",
       ],
       plugins: ["@typescript-eslint"],
       rules: {

@@ -5,13 +5,17 @@ export enum SourceType {
   URL = "url",
 }
 
+export type FileFormat = "csv" | "json" | "xlsx" | "txt" | "pdf";
+export type ApiMethod = "GET" | "POST" | "PUT" | "DELETE";
+export type DatabaseType = "postgres" | "mysql" | "mssql" | "oracle" | "sqlite";
+
 export interface ConnectionConfig {
   // Base model for connection details that will be extended by specific source types
 }
 
 export interface FileConnectionConfig extends ConnectionConfig {
   file_path?: string;
-  file_format: string; // Format of the file (e.g., csv, json, txt, pdf)
+  file_format?: string; // Format of the file (e.g., csv, json, txt, pdf)
   encoding?: string;
   delimiter?: string; // For CSV files
 }
@@ -49,11 +53,10 @@ export interface DataSourceBase {
   description?: string;
   source_type: SourceType;
   connection_details: Record<string, any>; // Connection details specific to the source type
-}
-
-export interface DataSourceCreate extends DataSourceBase {
   credentials?: Record<string, any>;
 }
+
+export interface DataSourceCreate extends DataSourceBase {}
 
 export interface DataSourceUpdate {
   name?: string;
@@ -67,33 +70,6 @@ export interface DataSource extends DataSourceBase {
   id: string;
   is_active: boolean;
   created_by?: string;
-  created_at: Date;
-  updated_at: Date;
-}
-
-export interface FileUploadBase {
-  data_source_id: string;
-  file_name: string;
-  file_type: string;
-  file_size: number;
-  storage_path: string;
-}
-
-export interface FileUploadCreate extends FileUploadBase {
-  metadata?: Record<string, any>;
-}
-
-export enum FileUploadStatus {
-  PENDING = "pending",
-  PROCESSING = "processing",
-  COMPLETED = "completed",
-  FAILED = "failed",
-}
-export interface FileUpload extends FileUploadBase {
-  id: string;
-  upload_status: FileUploadStatus;
-  processed: boolean;
-  metadata?: Record<string, any>;
-  uploaded_by?: string;
-  uploaded_at: Date;
+  created_at: string;
+  updated_at: string;
 }

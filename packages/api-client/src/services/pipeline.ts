@@ -15,6 +15,14 @@ import {
   IReadPipelineRunsResponse,
   IReadPipelinesRequest,
   IReadPipelinesResponse,
+  IReadPipelineStepRequest,
+  IReadPipelineStepResponse,
+  IReadPipelineStepRunRequest,
+  IReadPipelineStepRunResponse,
+  IReadPipelineStepRunsRequest,
+  IReadPipelineStepRunsResponse,
+  IReadPipelineStepsRequest,
+  IReadPipelineStepsResponse,
   IRunPipelineRequest,
   IRunPipelineResponse,
   IUpdatePipelineRequest,
@@ -78,13 +86,17 @@ const runPipeline = async (
     .then((res) => res.data);
 };
 
-const readPipelineRuns = async (
-  input: IReadPipelineRunsRequest,
-): Promise<IReadPipelineRunsResponse> => {
+const readPipelineRuns = async ({
+  pipeline_id,
+  ...input
+}: IReadPipelineRunsRequest): Promise<IReadPipelineRunsResponse> => {
   return await api()
-    .get<IReadPipelineRunsResponse>(API_ENDPOINTS.READ_PIPELINE_RUNS, {
-      params: input,
-    })
+    .get<IReadPipelineRunsResponse>(
+      API_ENDPOINTS.READ_PIPELINE_RUNS(pipeline_id),
+      {
+        params: input,
+      },
+    )
     .then((res) => res.data);
 };
 
@@ -122,6 +134,53 @@ const cancelPipelineRun = async (
     .then((res) => res.data);
 };
 
+const readPipelineSteps = async ({
+  pipeline_id,
+  ...input
+}: IReadPipelineStepsRequest): Promise<IReadPipelineStepsResponse> => {
+  return await api()
+    .get<IReadPipelineStepsResponse>(
+      API_ENDPOINTS.READ_PIPELINE_STEPS(pipeline_id),
+      {
+        params: input,
+      },
+    )
+    .then((res) => res.data);
+};
+
+const readPipelineStep = async (
+  input: IReadPipelineStepRequest,
+): Promise<IReadPipelineStepResponse> => {
+  return await api()
+    .get<IReadPipelineStepResponse>(
+      API_ENDPOINTS.READ_PIPELINE_STEP(input.step_id, input.pipeline_id),
+    )
+    .then((res) => res.data);
+};
+
+const readPipelineStepRuns = async (
+  input: IReadPipelineStepRunsRequest,
+): Promise<IReadPipelineStepRunsResponse> => {
+  return await api()
+    .get<IReadPipelineStepRunsResponse>(
+      API_ENDPOINTS.READ_PIPELINE_STEP_RUNS(input.pipeline_run_id),
+    )
+    .then((res) => res.data);
+};
+
+const readPipelineStepRun = async (
+  input: IReadPipelineStepRunRequest,
+): Promise<IReadPipelineStepRunResponse> => {
+  return await api()
+    .get<IReadPipelineStepRunResponse>(
+      API_ENDPOINTS.READ_PIPELINE_STEP_RUN(
+        input.step_run_id,
+        input.pipeline_run_id,
+      ),
+    )
+    .then((res) => res.data);
+};
+
 export const PipelineService = {
   readPipelines,
   createPipeline,
@@ -133,4 +192,8 @@ export const PipelineService = {
   readPipelineRun,
   getPipelineRunStatus,
   cancelPipelineRun,
+  readPipelineSteps,
+  readPipelineStep,
+  readPipelineStepRuns,
+  readPipelineStepRun,
 };

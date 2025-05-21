@@ -10,10 +10,7 @@ let config: {
   headers: Record<string, string>;
 } = {
   baseUrl: "",
-  headers: {
-    "Content-Type": "application/json",
-	Accept: "application/json",
-  },
+  headers: {},
 };
 
 export const initializeApi = (userConfig: InitializeApiProps): void => {

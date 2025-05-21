@@ -13,24 +13,21 @@ export interface ILoginJsonRequest {
 }
 
 export interface ILoginJsonResponse
-  extends ApiResponse<
-    Token & {
-      user: {
-        email: string;
-        id: string;
-        full_name: string;
-        is_active: boolean;
-        roles: string[];
-      };
-    }
-  > {}
+  extends ApiResponse<{
+    session: Token;
+    user: {
+      email: string;
+      id: string;
+      full_name: string;
+      is_active: boolean;
+      roles: string[];
+    };
+  }> {}
 
 export interface IRegisterRequest extends UserCreate {}
 
 export interface IRegisterResponse extends ApiResponse<User> {}
 
-export interface ILogoutRequest {
-  token: string;
-}
+export type ILogoutRequest = void;
 
 export interface ILogoutResponse extends ApiResponse<null> {}

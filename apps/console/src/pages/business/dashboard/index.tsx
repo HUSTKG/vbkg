@@ -1,15 +1,15 @@
 import {
-  ConflictDetectedActivity,
-  DataAddedActivity,
-  EntityCard,
-  InfoActivity,
-  SearchBar,
-  StatisticCard,
+    ConflictDetectedActivity,
+    DataAddedActivity,
+    EntityCard,
+    InfoActivity,
+    SearchBar,
+    StatisticCard,
 } from "@vbkg/ui";
 import { useState } from "react";
 
 export default function BusinessDashboard() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [_searchQuery, setSearchQuery] = useState("");
 
   const recentActivities = [
     {
@@ -25,7 +25,7 @@ export default function BusinessDashboard() {
       timestamp: "2024-04-14T09:15:00Z",
     },
     {
-      type: "info",
+	  type: "info",
       title: "Pipeline Completed",
       description: "Data processing pipeline completed successfully",
       timestamp: "2024-04-14T08:45:00Z",

@@ -10,13 +10,21 @@ import {
   IReadPipelineRunResponse,
   IGetPipelineRunStatusRequest,
   IGetPipelineRunStatusResponse,
+  IReadPipelineStepsRequest,
+  IReadPipelineStepsResponse,
+  IReadPipelineStepRequest,
+  IReadPipelineStepResponse,
+  IReadPipelineStepRunsRequest,
+  IReadPipelineStepRunsResponse,
+  IReadPipelineStepRunRequest,
+  IReadPipelineStepRunResponse,
 } from "@vbkg/types";
 import { PipelineService } from "../../services/pipeline";
 
 // Fetch all pipelines
 export const usePipelines = (
   input: IReadPipelinesRequest,
-  options?: UseQueryOptions<IReadPipelinesResponse, Error>,
+  options?: Partial<UseQueryOptions<IReadPipelinesResponse, Error>>,
 ) => {
   return useQuery<IReadPipelinesResponse, Error>({
     queryKey: ["pipelines", input],
@@ -28,7 +36,7 @@ export const usePipelines = (
 // Fetch a specific pipeline
 export const usePipeline = (
   input: IReadPipelineRequest,
-  options?: UseQueryOptions<IReadPipelineResponse, Error>,
+  options?: Partial<UseQueryOptions<IReadPipelineResponse, Error>>,
 ) => {
   return useQuery<IReadPipelineResponse, Error>({
     queryKey: ["pipeline", input.id],
@@ -69,6 +77,53 @@ export const usePipelineRunStatus = (
   return useQuery<IGetPipelineRunStatusResponse, Error>({
     queryKey: ["pipelineRunStatus", input.id],
     queryFn: () => PipelineService.getPipelineRunStatus(input),
+    ...options,
+  });
+};
+
+export const usePipelineSteps = (
+  input: IReadPipelineStepsRequest,
+  options?: Partial<UseQueryOptions<IReadPipelineStepsResponse, Error>>,
+) => {
+  return useQuery<IReadPipelineStepsResponse, Error>({
+    queryKey: ["pipelineSteps", input],
+    queryFn: () => PipelineService.readPipelineSteps(input),
+    ...options,
+  });
+};
+
+// Fetch a specific pipeline
+export const usePipelineStep = (
+  input: IReadPipelineStepRequest,
+  options?: Partial<UseQueryOptions<IReadPipelineStepResponse, Error>>,
+) => {
+  return useQuery<IReadPipelineStepResponse, Error>({
+    queryKey: ["pipelineStep", input.step_id],
+    queryFn: () => PipelineService.readPipelineStep(input),
+    ...options,
+  });
+};
+
+// Fetch all pipeline runs
+export const usePipelineStepRuns = (
+  input: IReadPipelineStepRunsRequest,
+  options?: UseQueryOptions<IReadPipelineStepRunsResponse, Error>,
+) => {
+  return useQuery<IReadPipelineStepRunsResponse, Error>({
+    queryKey: ["pipelineRuns", input],
+    queryFn: () => PipelineService.readPipelineStepRuns(input),
+    ...options,
+  });
+};
+
+// Fetch a specific pipeline run
+export const usePipelineStepRun = (
+  input: IReadPipelineStepRunRequest,
+  options?: UseQueryOptions<IReadPipelineStepRunResponse, Error>,
+) => {
+  return useQuery<IReadPipelineStepRunResponse, Error>({
+    queryKey: ["pipelineRun", input.step_run_id],
+    queryFn: () => PipelineService.readPipelineStepRun(input),
     ...options,
   });
 };

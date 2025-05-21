@@ -5,13 +5,13 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "biome --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "@typescript-eslint/parser": "^8.29.1",
+    "biome": "0.3.3",
     "eslint": "^9.24.0",
-    "prettier": "^3.5.3",
     "turbo": "^2.5.0",
     "typescript": "^5.8.3"
   },

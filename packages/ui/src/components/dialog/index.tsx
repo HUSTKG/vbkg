@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,9 +7,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export type DialogSize = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
 
 export type DialogProps = {
   /** The title of the dialog */
@@ -25,7 +28,7 @@ export type DialogProps = {
   /** Whether the dialog is open (for controlled usage) */
   open?: boolean;
   /** Function to set the open state (for controlled usage) */
-  setOpen?: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
   /** Show footer with action buttons */
   showFooter?: boolean;
   /** Text for the primary action button */
@@ -41,7 +44,7 @@ export type DialogProps = {
   /** Additional class name for dialog content */
   contentClassName?: string;
   /** Width class for the dialog (Tailwind width class) */
-  width?: string;
+  size?: DialogSize;
 };
 
 const DialogComponent: React.FC<DialogProps> = ({
@@ -51,30 +54,30 @@ const DialogComponent: React.FC<DialogProps> = ({
   triggerText,
   customTrigger,
   open,
-  setOpen,
+  onOpenChange,
   showFooter = true,
-  primaryActionText = 'Save',
+  primaryActionText = "Save",
   onPrimaryAction,
   primaryActionDisabled = false,
-  cancelText = 'Cancel',
+  cancelText = "Cancel",
   onClose,
-  contentClassName = '',
-  width = 'sm:max-w-md',
+  contentClassName = "",
+  size = "md",
 }) => {
   // For uncontrolled usage
   const [internalOpen, setInternalOpen] = React.useState(false);
-  
+
   // Determine if using controlled or uncontrolled mode
-  const isControlled = open !== undefined && setOpen !== undefined;
+  const isControlled = open !== undefined && onOpenChange !== undefined;
   const isOpen = isControlled ? open : internalOpen;
-  const setIsOpen = isControlled ? setOpen : setInternalOpen;
-  
+  const setIsOpen = isControlled ? onOpenChange : setInternalOpen;
+
   // Handle close
   const handleClose = () => {
     setIsOpen(false);
     if (onClose) onClose();
   };
-  
+
   // Handle primary action
   const handlePrimaryAction = () => {
     if (onPrimaryAction) {
@@ -85,21 +88,28 @@ const DialogComponent: React.FC<DialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {customTrigger ? (
-        <DialogTrigger asChild>
-          {customTrigger}
-        </DialogTrigger>
+        <DialogTrigger asChild>{customTrigger}</DialogTrigger>
       ) : triggerText ? (
         <DialogTrigger asChild>
           <Button variant="default">{triggerText}</Button>
         </DialogTrigger>
       ) : null}
-      
-      <DialogContent 
-        className={`${width} ${contentClassName} [&>button]:hidden`}
+
+      <DialogContent
+        className={cn(
+          "max-h-[80vh] overflow-y-auto p-0",
+          size === "sm" && "sm:max-w-sm",
+          size === "md" && "sm:max-w-md",
+          size === "lg" && "sm:max-w-lg",
+          size === "xl" && "sm:max-w-xl",
+          size === "2xl" && "sm:max-w-2xl",
+          size === "3xl" && "sm:max-w-3xl",
+          `${contentClassName} [&>button]:hidden`,
+        )}
         onEscapeKeyDown={handleClose}
         onInteractOutside={handleClose}
       >
-        <DialogHeader>
+        <DialogHeader className="sticky top-0 p-6 z-100 bg-white/95">
           <div className="flex items-center justify-between">
             <DialogTitle>{title}</DialogTitle>
             <Button
@@ -112,21 +122,14 @@ const DialogComponent: React.FC<DialogProps> = ({
               <span className="sr-only">Close</span>
             </Button>
           </div>
-          {description && (
-            <DialogDescription>{description}</DialogDescription>
-          )}
+          {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        
-        <div className="py-4">
-          {children}
-        </div>
-        
+
+        <div className="py-4 px-6">{children}</div>
+
         {showFooter && (
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={handleClose}
-            >
+          <DialogFooter className="p-4">
+            <Button variant="outline" onClick={handleClose}>
               {cancelText}
             </Button>
             <Button

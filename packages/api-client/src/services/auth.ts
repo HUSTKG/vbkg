@@ -7,7 +7,7 @@ import {
   ILogoutRequest,
   ILogoutResponse,
 } from "@vbkg/types";
-import { IRegisterRequest, IRegisterResponse } from "@vbkg/types/src";
+import { IRegisterRequest, IRegisterResponse } from "@vbkg/types";
 import { API_ENDPOINTS } from "@vbkg/utils";
 
 const login = async (input: ILoginRequest): Promise<ILoginResponse> => {

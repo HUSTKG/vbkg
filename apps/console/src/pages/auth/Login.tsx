@@ -1,4 +1,4 @@
-import { AppForm, Card } from "@vbkg/ui";
+import { AppForm, Card, toast } from "@vbkg/ui";
 import { loginSchema } from "@vbkg/schemas";
 import { Link, useNavigate } from "react-router";
 import { useLoginJson } from "@vbkg/api-client";
@@ -9,7 +9,10 @@ export default function Login() {
   const { mutate: login } = useLoginJson({
     onSuccess: (data) => {
       setSession({
-        accessToken: data.data.access_token,
+        session: {
+          accessToken: data.data.session.access_token,
+          refreshToken: data.data.session.refresh_token,
+        },
         user: {
           id: data.data.user.id,
           name: data.data.user.full_name,
@@ -24,7 +27,7 @@ export default function Login() {
       }
     },
     onError: (error) => {
-      alert("Login failed: " + error.message);
+      toast("Login failed " + error.message);
     },
   });
 

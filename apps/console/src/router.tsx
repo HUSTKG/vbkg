@@ -1,6 +1,5 @@
-// packages/console/src/routes/index.tsx
-import { lazy, Suspense } from "react";
-import { createBrowserRouter, Navigate, RouteObject } from "react-router";
+import { Suspense, lazy } from "react";
+import { Navigate, type RouteObject, createBrowserRouter } from "react-router";
 
 // Layouts
 import { getSession } from "@vbkg/utils";
@@ -23,16 +22,40 @@ const UsageAnalytics = lazy(() => import("./pages/business/UsageAnalytics"));
 const BillingSettings = lazy(() => import("./pages/business/BillingSettings"));
 
 // Admin Pages
-const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
-const ManageUser = lazy(() => import("./pages/admin/ManageUser"));
-const ConfigureDataSource = lazy(
-  () => import("./pages/admin/ConfigureDataSource"),
+const AdminDashboard = lazy(() => import("./pages/admin/dashboard"));
+const ManageUser = lazy(() => import("./pages/admin/manage-users/users"));
+const UserDetail = lazy(
+  () => import("./pages/admin/manage-users/users/detail"),
+);
+const RoleManagement = lazy(() => import("./pages/admin/manage-users/roles"));
+const RoleDetail = lazy(
+  () => import("./pages/admin/manage-users/roles/detail"),
+);
+const PermissionManagement = lazy(
+  () => import("./pages/admin/manage-users/permissions"),
+);
+const AssignRole = lazy(
+  () => import("./pages/admin/manage-users/roles/assign-role"),
+);
+const UserDashboard = lazy(
+  () => import("./pages/admin/manage-users/dashboard"),
+);
+
+const ConfigureDataSource = lazy(() => import("./pages/admin/data-sources"));
+const DataSourceDetail = lazy(
+  () => import("./pages/admin/data-sources/detail"),
 );
 const ConfigureDataPipeline = lazy(
-  () => import("./pages/admin/ConfigureDataPipeline"),
+  () => import("./pages/admin/data-pipelines"),
 );
-const SystemMonitoring = lazy(() => import("./pages/admin/SystemMonitoring"));
-const SystemSettings = lazy(() => import("./pages/admin/SystemSettings"));
+const CreateDataPipeline = lazy(
+  () => import("./pages/admin/data-pipelines/create"),
+);
+const DataPipelineDetail = lazy(
+  () => import("./pages/admin/data-pipelines/detail"),
+);
+const SystemMonitoring = lazy(() => import("./pages/admin/system-monitoring"));
+const SystemSettings = lazy(() => import("./pages/admin/system-settings"));
 
 // Shared Features
 const ManageApiKey = lazy(() => import("./pages/shared/ManageApiKey"));
@@ -196,6 +219,7 @@ const routes: RouteObject[] = [
         <AdminLayout />
       </RoleGuard>
     ),
+    errorElement: <AdvancedErrorElement />,
     children: [
       {
         index: true,
@@ -211,27 +235,125 @@ const routes: RouteObject[] = [
       },
       {
         path: "users",
-        element: (
-          <Suspense fallback={<PageLoading />}>
-            <ManageUser />
-          </Suspense>
-        ),
+        children: [
+          {
+            path: "",
+            index: true,
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <UserDashboard />
+              </Suspense>
+            ),
+          },
+          {
+            path: "user",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <ManageUser />
+              </Suspense>
+            ),
+          },
+          {
+            path: "user/:id",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <UserDetail />
+              </Suspense>
+            ),
+          },
+          {
+            path: "roles",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <RoleManagement />
+              </Suspense>
+            ),
+          },
+          {
+            path: "roles/:id",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <RoleDetail />
+              </Suspense>
+            ),
+          },
+          {
+            path: "roles/assigns",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <AssignRole />
+              </Suspense>
+            ),
+          },
+          {
+            path: "permissions",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <PermissionManagement />
+              </Suspense>
+            ),
+          },
+        ],
       },
       {
         path: "data-sources",
-        element: (
-          <Suspense fallback={<PageLoading />}>
-            <ConfigureDataSource />
-          </Suspense>
-        ),
+        children: [
+          {
+            path: "",
+            index: true,
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <ConfigureDataSource />
+              </Suspense>
+            ),
+          },
+          {
+            path: ":id",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <DataSourceDetail />
+              </Suspense>
+            ),
+          },
+        ],
       },
       {
         path: "data-pipelines",
-        element: (
-          <Suspense fallback={<PageLoading />}>
-            <ConfigureDataPipeline />
-          </Suspense>
-        ),
+        children: [
+          {
+            path: "",
+            index: true,
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <ConfigureDataPipeline />
+              </Suspense>
+            ),
+          },
+          {
+            path: "create",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <CreateDataPipeline />
+              </Suspense>
+            ),
+          },
+          {
+            path: ":id",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <DataPipelineDetail />
+              </Suspense>
+            ),
+          },
+          {
+            path: ":id/edit",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <CreateDataPipeline />
+              </Suspense>
+            ),
+          },
+        ],
       },
       {
         path: "monitoring",
@@ -250,7 +372,6 @@ const routes: RouteObject[] = [
         ),
       },
     ],
-    errorElement: <AdvancedErrorElement />,
   },
 
   // 404 Route

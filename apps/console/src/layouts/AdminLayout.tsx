@@ -1,18 +1,21 @@
+import { useLogout } from "@vbkg/api-client";
+import { AppLayout } from "@vbkg/ui";
+import { getSession, setSession } from "@vbkg/utils";
 import {
-  AppLayout,
   Database,
-  Graph,
+  GitGraph,
   Home,
   Monitor,
   Settings,
   Users,
-} from "@vbkg/ui";
-import { getSession, setSession } from "@vbkg/utils";
-import { Outlet } from "react-router";
+} from "lucide-react";
+import { Outlet, useNavigate } from "react-router";
 import { queryClient } from "../App";
 
 const AdminLayout = () => {
   const session = getSession();
+  const { mutateAsync: logout } = useLogout({});
+  const navigate = useNavigate();
   return (
     <AppLayout
       menuItems={[
@@ -24,7 +27,24 @@ const AdminLayout = () => {
         {
           title: "Users",
           icon: <Users />,
-          path: "/admin/users",
+          submenu: [
+            {
+              title: "Manage User Dashboard",
+              path: "/admin/users",
+            },
+            {
+              title: "Manage Users",
+              path: "/admin/users/user",
+            },
+            {
+              title: "Manage Roles",
+              path: "/admin/users/roles",
+            },
+            {
+              title: "Manage Permissions",
+              path: "/admin/users/permissions",
+            },
+          ],
         },
         {
           title: "Data Sources",
@@ -33,7 +53,7 @@ const AdminLayout = () => {
         },
         {
           title: "Data Pipelines",
-          icon: <Graph />,
+          icon: <GitGraph />,
           path: "/admin/data-pipelines",
         },
         {
@@ -50,9 +70,11 @@ const AdminLayout = () => {
       userEmail={session?.user?.email}
       userName={session?.user?.name}
       userAvatar={""}
-      onLogout={() => {
-        setSession(null);
+      onLogout={async () => {
+        await logout();
         queryClient.removeQueries();
+        setSession(null);
+        navigate("/login");
       }}
       profileMenuItems={[
         {

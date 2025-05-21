@@ -1,4 +1,6 @@
+import { getSession, setSession } from "@vbkg/utils";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import { getConfig } from "./apiConfig";
 
 // Create API instance with current config
@@ -9,10 +11,7 @@ export const createApiInstance = () => {
     throw new Error("Base URL is required");
   }
 
-  const defaultHeaders = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  };
+  const defaultHeaders = {};
 
   // Merge default headers with user-defined headers
   config.headers = { ...defaultHeaders, ...config.headers };
@@ -28,22 +27,53 @@ export const createApiInstance = () => {
   });
 
   // Add auth token to requests
-  api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  });
+  api.interceptors.request.use(
+    (config) => {
+      return config;
+    },
+    async (error) => {
+      return Promise.reject(error);
+    },
+  );
 
   // Handle errors globally
   api.interceptors.response.use(
     (response) => response,
-    (error) => {
+    async (error) => {
+      const originalRequest = error.config;
       if (error.response?.status === 401) {
-        // Handle unauthorized
+        const session = getSession();
+        originalRequest._retry = true;
+        try {
+          if (session) {
+            const token = session?.session.accessToken;
+            const decodedToken = jwtDecode(token);
+            const exp = Number(decodedToken?.exp) * 1000;
+            if (Date.now() > exp) {
+              // Token expired, redirect to login
+              const response = await axios.post(
+                config.baseUrl + "/auth/refresh-token",
+                {
+                  token: session?.session.refreshToken,
+                },
+              );
+              setSession({
+                session: {
+                  accessToken: response.data.accessToken,
+                  refreshToken: response.data.refreshToken,
+                },
+                user: session.user,
+              });
+              api.defaults.headers.common.Authorization = `Bearer ${response.data.accessToken}`;
+              return api.request(originalRequest);
+            }
+          }
+        } catch (error) {
+          setSession(null);
+          window.location.href = "/login";
+          return Promise.reject(error);
+        }
       }
-      return Promise.reject(error);
     },
   );
 

@@ -1,5 +1,8 @@
 export type Session = {
-  accessToken: string;
+  session: {
+    accessToken: string;
+    refreshToken: string;
+  };
   user: {
     id: string;
     name: string;
