@@ -1,8 +1,6 @@
 import {
   ICreateEntityRequest,
   ICreateEntityResponse,
-  ISearchEntitiesRequest,
-  ISearchEntitiesResponse,
   ISearchKGEntitiesRequest,
   IReadEntityRequest,
   IReadEntityResponse,
@@ -47,7 +45,7 @@ const readEntity = async (
   input: IReadEntityRequest,
 ): Promise<IReadEntityResponse> => {
   return await api()
-    .get<IReadEntityResponse>(API_ENDPOINTS.READ_ENTITY, {
+    .get<IReadEntityResponse>(API_ENDPOINTS.READ_ENTITY(input.id), {
       params: input,
     })
     .then((res) => res.data);

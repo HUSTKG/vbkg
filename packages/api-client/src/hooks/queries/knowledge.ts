@@ -1,7 +1,5 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import {
-  ISearchKGEntitiesRequest,
-  ISearchKGEntitiesResponse,
   IReadEntityRequest,
   IReadEntityResponse,
   IReadEntityRelationshipsRequest,
@@ -12,18 +10,6 @@ import {
   IGetKnowledgeGraphStatsResponse,
 } from "@vbkg/types";
 import { KnowledgeService } from "../../services/knowledge";
-
-// Search entities
-export const useSearchKGEntities = (
-  input: ISearchKGEntitiesRequest,
-  options?: UseQueryOptions<ISearchKGEntitiesResponse, Error>,
-) => {
-  return useQuery<ISearchKGEntitiesResponse, Error>({
-    queryKey: ["searchEntities", input],
-    queryFn: () => KnowledgeService.searchEntities(input),
-    ...options,
-  });
-};
 
 // Read single entity
 export const useEntity = (

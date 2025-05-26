@@ -5,65 +5,91 @@ import { Navigate, type RouteObject, createBrowserRouter } from "react-router";
 import { getSession } from "@vbkg/utils";
 import AdminLayout from "./layouts/AdminLayout";
 import AuthLayout from "./layouts/AuthLayout";
-import ConsoleLayout from "./layouts/ConsoleLayout";
 import AdvancedErrorElement from "./pages/Error";
+import NotFound from "./pages/NotFound";
+import ExpertLayout from "./layouts/ExpertLayout";
+import UserLayout from "./layouts/UserLayout";
 
 // Auth Pages
 const LoginPage = lazy(() => import("./pages/auth/Login"));
 const RegisterPage = lazy(() => import("./pages/auth/Register"));
 const ForgotPasswordPage = lazy(() => import("./pages/auth/ForgotPassword"));
 
-// Business User Pages
-const BusinessDashboard = lazy(() => import("./pages/business/Dashboard"));
-const ManageProjects = lazy(() => import("./pages/business/ManageProjects"));
-const TeamManagement = lazy(() => import("./pages/business/TeamManagement"));
-const DataIntegration = lazy(() => import("./pages/business/DataIntegration"));
-const UsageAnalytics = lazy(() => import("./pages/business/UsageAnalytics"));
-const BillingSettings = lazy(() => import("./pages/business/BillingSettings"));
-
 // Admin Pages
 const AdminDashboard = lazy(() => import("./pages/admin/dashboard"));
-const ManageUser = lazy(() => import("./pages/admin/manage-users/users"));
+const ManageUser = lazy(() => import("./pages/admin/user-management/users"));
 const UserDetail = lazy(
-  () => import("./pages/admin/manage-users/users/detail"),
+  () => import("./pages/admin/user-management/users/detail"),
 );
-const RoleManagement = lazy(() => import("./pages/admin/manage-users/roles"));
-const RoleDetail = lazy(
-  () => import("./pages/admin/manage-users/roles/detail"),
-);
-const PermissionManagement = lazy(
-  () => import("./pages/admin/manage-users/permissions"),
-);
-const AssignRole = lazy(
-  () => import("./pages/admin/manage-users/roles/assign-role"),
-);
-const UserDashboard = lazy(
-  () => import("./pages/admin/manage-users/dashboard"),
+const RoleManagement = lazy(
+  () => import("./pages/admin/user-management/roles"),
 );
 
-const ConfigureDataSource = lazy(() => import("./pages/admin/data-sources"));
+const ConfigureDataSource = lazy(
+  () => import("./pages/common/data-management/sources"),
+);
 const DataSourceDetail = lazy(
-  () => import("./pages/admin/data-sources/detail"),
+  () => import("./pages/common/data-management/sources/detail"),
 );
 const ConfigureDataPipeline = lazy(
-  () => import("./pages/admin/data-pipelines"),
-);
-const CreateDataPipeline = lazy(
-  () => import("./pages/admin/data-pipelines/create"),
+  () => import("./pages/common/data-management/pipelines"),
 );
 const DataPipelineDetail = lazy(
-  () => import("./pages/admin/data-pipelines/detail"),
+  () => import("./pages/common/data-management/pipelines/detail"),
 );
-const SystemMonitoring = lazy(() => import("./pages/admin/system-monitoring"));
-const SystemSettings = lazy(() => import("./pages/admin/system-settings"));
+const KGOverview = lazy(
+  () => import("./pages/common/knowledge-graph/overview"),
+);
+const KGEntities = lazy(
+  () => import("./pages/common/knowledge-graph/entities"),
+);
+const KGRelationships = lazy(
+  () => import("./pages/common/knowledge-graph/relationship"),
+);
+const KGExplorer = lazy(
+  () => import("./pages/common/knowledge-graph/explorer"),
+);
+const QualityDashboard = lazy(
+  () => import("./pages/common/quality-management/dashboard"),
+);
+const QualityConflicts = lazy(
+  () => import("./pages/common/quality-management/conflicts"),
+);
 
-// Shared Features
-const ManageApiKey = lazy(() => import("./pages/shared/ManageApiKey"));
-const CustomVisualization = lazy(
-  () => import("./pages/shared/CustomVisualization"),
+// Expert Pages
+const ExpertConflict = lazy(() => import("./pages/expert/conflicts"));
+const ExpertKGRelationship = lazy(
+  () => import("./pages/common/knowledge-graph/relationship"),
 );
-const UserProfile = lazy(() => import("./pages/shared/UserProfile"));
-const NotFoundPage = lazy(() => import("./pages/NotFound"));
+const ExpertKGEntity = lazy(
+  () => import("./pages/common/knowledge-graph/entities"),
+);
+const ExpertKGExplorer = lazy(
+  () => import("./pages/common/knowledge-graph/explorer"),
+);
+const DomainManagement = lazy(
+  () => import("./pages/expert/domain-management/domain"),
+);
+const DomainEntityTypes = lazy(
+  () => import("./pages/expert/domain-management/entity-types"),
+);
+const DomainRelationshipTypes = lazy(
+  () => import("./pages/expert/domain-management/relationship-types"),
+);
+
+const DomainFibo = lazy(() => import("./pages/expert/domain-management/fibo"));
+const DomainFiboMapping = lazy(
+  () => import("./pages/expert/domain-management/fibo-mapping"),
+);
+const DomainExtractionTemplate = lazy(
+  () => import("./pages/expert/domain-management/extraction-templates"),
+);
+
+// User Pages
+const UserSearch = lazy(() => import("./pages/user/search"));
+const UserChatBot = lazy(() => import("./pages/user/chatbot"));
+const UserVisualization = lazy(() => import("./pages/user/visualization"));
+const UserAPIAccess = lazy(() => import("./pages/user/api-access"));
 
 // Loading Component
 const PageLoading = () => (
@@ -96,6 +122,15 @@ const routes: RouteObject[] = [
     element: <AuthLayout />,
     children: [
       {
+        path: "",
+        index: true,
+        element: (
+          <Suspense fallback={<PageLoading />}>
+            <Navigate to="/login" replace />
+          </Suspense>
+        ),
+      },
+      {
         path: "login",
         element: (
           <Suspense fallback={<PageLoading />}>
@@ -124,89 +159,152 @@ const routes: RouteObject[] = [
 
   // Business Routes
   {
-    path: "/",
+    path: "/user",
     element: (
-      <RoleGuard allowedRoles={["business"]}>
-        <ConsoleLayout />
+      <RoleGuard allowedRoles={["user"]}>
+        <UserLayout />
       </RoleGuard>
     ),
     children: [
       {
         index: true,
-        element: <Navigate to="/dashboard" replace />,
+        element: <Navigate to="search" replace />,
       },
       {
-        path: "dashboard",
+        path: "search",
         element: (
           <Suspense fallback={<PageLoading />}>
-            <BusinessDashboard />
+            <UserSearch />
           </Suspense>
         ),
       },
       {
-        path: "projects",
+        path: "chatbot",
         element: (
           <Suspense fallback={<PageLoading />}>
-            <ManageProjects />
+            <UserChatBot />
           </Suspense>
         ),
       },
       {
-        path: "team",
+        path: "visualization",
         element: (
           <Suspense fallback={<PageLoading />}>
-            <TeamManagement />
+            <UserVisualization />
           </Suspense>
         ),
       },
       {
-        path: "integration",
+        path: "api-access",
         element: (
           <Suspense fallback={<PageLoading />}>
-            <DataIntegration />
+            <UserAPIAccess />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+  {
+    path: "/expert",
+    element: (
+      <RoleGuard allowedRoles={["expert"]}>
+        <ExpertLayout />
+      </RoleGuard>
+    ),
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/expert/conflicts" replace />,
+      },
+      {
+        path: "conflicts",
+        element: (
+          <Suspense fallback={<PageLoading />}>
+            <ExpertConflict />
           </Suspense>
         ),
       },
       {
-        path: "usage",
-        element: (
-          <Suspense fallback={<PageLoading />}>
-            <UsageAnalytics />
-          </Suspense>
-        ),
+        path: "kg",
+        children: [
+          {
+            path: "explorer",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <ExpertKGExplorer />
+              </Suspense>
+            ),
+          },
+          {
+            path: "relationships",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <ExpertKGRelationship />
+              </Suspense>
+            ),
+          },
+          {
+            path: "entities",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <ExpertKGEntity />
+              </Suspense>
+            ),
+          },
+        ],
       },
       {
-        path: "billing",
-        element: (
-          <Suspense fallback={<PageLoading />}>
-            <BillingSettings />
-          </Suspense>
-        ),
-      },
-      // Shared Features for Business Users
-      {
-        path: "api-keys",
-        element: (
-          <Suspense fallback={<PageLoading />}>
-            <ManageApiKey />
-          </Suspense>
-        ),
-      },
-      {
-        path: "visualizations",
-        element: (
-          <Suspense fallback={<PageLoading />}>
-            <CustomVisualization />
-          </Suspense>
-        ),
-      },
-      {
-        path: "profile",
-        element: (
-          <Suspense fallback={<PageLoading />}>
-            <UserProfile />
-          </Suspense>
-        ),
+        path: "domain",
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <DomainManagement />
+              </Suspense>
+            ),
+          },
+          {
+            path: "entity-types",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <DomainEntityTypes />
+              </Suspense>
+            ),
+          },
+          {
+            path: "relationship-types",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <DomainRelationshipTypes />
+              </Suspense>
+            ),
+          },
+          {
+            path: "fibo",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <DomainFibo />
+              </Suspense>
+            ),
+          },
+          {
+            path: "fibo-mapping",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <DomainFiboMapping />
+              </Suspense>
+            ),
+          },
+          {
+            path: "extraction-templates",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <DomainExtractionTemplate />
+              </Suspense>
+            ),
+          },
+        ],
       },
     ],
   },
@@ -237,16 +335,7 @@ const routes: RouteObject[] = [
         path: "users",
         children: [
           {
-            path: "",
             index: true,
-            element: (
-              <Suspense fallback={<PageLoading />}>
-                <UserDashboard />
-              </Suspense>
-            ),
-          },
-          {
-            path: "user",
             element: (
               <Suspense fallback={<PageLoading />}>
                 <ManageUser />
@@ -269,34 +358,10 @@ const routes: RouteObject[] = [
               </Suspense>
             ),
           },
-          {
-            path: "roles/:id",
-            element: (
-              <Suspense fallback={<PageLoading />}>
-                <RoleDetail />
-              </Suspense>
-            ),
-          },
-          {
-            path: "roles/assigns",
-            element: (
-              <Suspense fallback={<PageLoading />}>
-                <AssignRole />
-              </Suspense>
-            ),
-          },
-          {
-            path: "permissions",
-            element: (
-              <Suspense fallback={<PageLoading />}>
-                <PermissionManagement />
-              </Suspense>
-            ),
-          },
         ],
       },
       {
-        path: "data-sources",
+        path: "data/sources",
         children: [
           {
             path: "",
@@ -318,7 +383,7 @@ const routes: RouteObject[] = [
         ],
       },
       {
-        path: "data-pipelines",
+        path: "data/pipelines",
         children: [
           {
             path: "",
@@ -330,14 +395,6 @@ const routes: RouteObject[] = [
             ),
           },
           {
-            path: "create",
-            element: (
-              <Suspense fallback={<PageLoading />}>
-                <CreateDataPipeline />
-              </Suspense>
-            ),
-          },
-          {
             path: ":id",
             element: (
               <Suspense fallback={<PageLoading />}>
@@ -345,31 +402,65 @@ const routes: RouteObject[] = [
               </Suspense>
             ),
           },
+        ],
+      },
+      {
+        path: "kg",
+        children: [
           {
-            path: ":id/edit",
+            path: "overview",
             element: (
               <Suspense fallback={<PageLoading />}>
-                <CreateDataPipeline />
+                <KGOverview />
+              </Suspense>
+            ),
+          },
+          {
+            path: "entities",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <KGEntities />
+              </Suspense>
+            ),
+          },
+          {
+            path: "relationships",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <KGRelationships />
+              </Suspense>
+            ),
+          },
+          {
+            path: "explorer",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <KGExplorer />
               </Suspense>
             ),
           },
         ],
       },
       {
-        path: "monitoring",
-        element: (
-          <Suspense fallback={<PageLoading />}>
-            <SystemMonitoring />
-          </Suspense>
-        ),
-      },
-      {
-        path: "settings",
-        element: (
-          <Suspense fallback={<PageLoading />}>
-            <SystemSettings />
-          </Suspense>
-        ),
+        path: "quality",
+        children: [
+          {
+            path: "dashboard",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <QualityDashboard />
+              </Suspense>
+            ),
+          },
+          {
+            path: "conflicts",
+            element: (
+              <Suspense fallback={<PageLoading />}>
+                <QualityConflicts />
+              </Suspense>
+            ),
+          },
+        ],
       },
     ],
   },
@@ -379,7 +470,7 @@ const routes: RouteObject[] = [
     path: "*",
     element: (
       <Suspense fallback={<PageLoading />}>
-        <NotFoundPage />
+        <NotFound />
       </Suspense>
     ),
   },

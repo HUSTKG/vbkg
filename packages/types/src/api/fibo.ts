@@ -1,16 +1,26 @@
-import { ApiResponse, PaginatedResponse } from "../models";
 import {
+  ApiResponse,
+  BulkMappingResponse,
   EntityMapping,
+  EntityMappingCreate,
+  EntityMappingUpdate,
+  EntityTypeSuggestion,
   FIBOClass,
   FIBOClassCreate,
+  FIBOClassSuggestion,
   FIBOClassUpdate,
   FIBOProperty,
   FIBOPropertyCreate,
+  FIBOPropertySuggestion,
   FIBOPropertyUpdate,
   OntologyImportRequest,
   OntologyImportResponse,
+  PaginatedResponse,
   RelationshipMapping,
-} from "../models/fibo";
+  RelationshipMappingCreate,
+  RelationshipMappingUpdate,
+  RelationshipTypeSuggestion,
+} from "../models";
 
 export interface IReadFiboClassesRequest {
   domain?: string;
@@ -40,6 +50,7 @@ export interface IDeleteFiboClassRequest {
 }
 export interface IDeleteFiboClassResponse extends ApiResponse<unknown> {}
 
+// FIBO Property Operations (keeping existing)
 export interface IReadFiboPropertiesRequest {
   domain_class_id?: string;
   property_type?: "object" | "datatype";
@@ -71,22 +82,41 @@ export interface IDeleteFiboPropertyRequest {
 }
 export interface IDeleteFiboPropertyResponse extends ApiResponse<unknown> {}
 
+// Ontology Import Operations (keeping existing)
 export interface IImportOntologyRequest extends OntologyImportRequest {}
 export interface IImportOntologyResponse
   extends ApiResponse<OntologyImportResponse> {}
 
+// Updated Entity Mapping Operations
 export interface IReadEntityMappingsRequest {
-  verified_only?: boolean;
+  entity_type_id?: number;
+  mapping_status?: "pending" | "mapped" | "rejected" | "needs_review";
+  is_verified?: boolean;
+  auto_mapped?: boolean;
+  search?: string;
   limit?: number;
   skip?: number;
 }
 export interface IReadEntityMappingsResponse
   extends PaginatedResponse<EntityMapping> {}
 
-export interface ICreateEntityMappingRequest {
-  mapping: EntityMapping;
+export interface IReadEntityMappingRequest {
+  id: string;
 }
-export interface ICreateEntityMappingResponse {}
+export interface IReadEntityMappingResponse
+  extends ApiResponse<EntityMapping> {}
+
+export interface ICreateEntityMappingRequest {
+  mapping: EntityMappingCreate;
+}
+export interface ICreateEntityMappingResponse
+  extends ApiResponse<EntityMapping> {}
+
+export interface IUpdateEntityMappingRequest extends EntityMappingUpdate {
+  id: string;
+}
+export interface IUpdateEntityMappingResponse
+  extends ApiResponse<EntityMapping> {}
 
 export interface IDeleteEntityMappingRequest {
   id: string;
@@ -94,23 +124,43 @@ export interface IDeleteEntityMappingRequest {
 export interface IDeleteEntityMappingResponse extends ApiResponse<unknown> {}
 
 export interface IVerifyEntityMappingRequest {
-  entity_type: string;
+  id: string;
   verified: boolean;
+  notes?: string;
 }
-export interface IVerifyEntityMappingResponse extends ApiResponse<unknown> {}
+export interface IVerifyEntityMappingResponse
+  extends ApiResponse<EntityMapping> {}
 
+// Updated Relationship Mapping Operations
 export interface IReadRelationshipMappingsRequest {
-  verified_only: boolean;
+  relationship_type_id?: number;
+  mapping_status?: "pending" | "mapped" | "rejected" | "needs_review";
+  is_verified?: boolean;
+  auto_mapped?: boolean;
+  search?: string;
   limit?: number;
   skip?: number;
 }
 export interface IReadRelationshipMappingsResponse
   extends PaginatedResponse<RelationshipMapping> {}
 
+export interface IReadRelationshipMappingRequest {
+  id: string;
+}
+export interface IReadRelationshipMappingResponse
+  extends ApiResponse<RelationshipMapping> {}
+
 export interface ICreateRelationshipMappingRequest {
-  mapping: RelationshipMapping;
+  mapping: RelationshipMappingCreate;
 }
 export interface ICreateRelationshipMappingResponse
+  extends ApiResponse<RelationshipMapping> {}
+
+export interface IUpdateRelationshipMappingRequest
+  extends RelationshipMappingUpdate {
+  id: string;
+}
+export interface IUpdateRelationshipMappingResponse
   extends ApiResponse<RelationshipMapping> {}
 
 export interface IDeleteRelationshipMappingRequest {
@@ -120,24 +170,92 @@ export interface IDeleteRelationshipMappingResponse
   extends ApiResponse<unknown> {}
 
 export interface IVerifyRelationshipMappingRequest {
-  relationship_type: string;
+  id: string;
   verified: boolean;
+  notes?: string;
 }
 export interface IVerifyRelationshipMappingResponse
-  extends ApiResponse<unknown> {}
+  extends ApiResponse<RelationshipMapping> {}
+
+// Suggestion Operations
+export interface ISuggestEntityTypesRequest {
+  text: string;
+  context?: string;
+  domain_id?: number;
+  max_suggestions?: number;
+}
+export interface ISuggestEntityTypesResponse
+  extends ApiResponse<EntityTypeSuggestion[]> {}
+
+export interface ISuggestRelationshipTypesRequest {
+  text: string;
+  source_entity_type_id?: number;
+  target_entity_type_id?: number;
+  context?: string;
+  domain_id?: number;
+  max_suggestions?: number;
+}
+export interface ISuggestRelationshipTypesResponse
+  extends ApiResponse<RelationshipTypeSuggestion[]> {}
 
 export interface ISuggestFiboClassesRequest {
-  entity_text: string;
-  entity_type: string;
-  max_suggestions: number;
+  entity_text?: string;
+  entity_type?: string;
+  entity_type_id?: number;
+  context?: string;
+  max_suggestions?: number;
 }
-export interface ISuggestFiboClassesResponse extends ApiResponse<FIBOClass[]> {}
+export interface ISuggestFiboClassesResponse
+  extends ApiResponse<FIBOClassSuggestion[]> {}
 
 export interface ISuggestFiboPropertiesRequest {
-  relationship_type: string;
-  source_entity_type: string;
-  target_entity_type: string;
-  max_suggestions: number;
+  relationship_type?: string;
+  relationship_type_id?: number;
+  source_entity_type?: string;
+  source_entity_type_id?: number;
+  target_entity_type?: string;
+  target_entity_type_id?: number;
+  context?: string;
+  max_suggestions?: number;
 }
 export interface ISuggestFiboPropertiesResponse
-  extends ApiResponse<FIBOProperty[]> {}
+  extends ApiResponse<FIBOPropertySuggestion[]> {}
+
+// Bulk Operations
+export interface IBulkCreateEntityMappingsRequest {
+  mappings: EntityMappingCreate[];
+}
+export interface IBulkCreateEntityMappingsResponse
+  extends ApiResponse<BulkMappingResponse> {}
+
+export interface IBulkCreateRelationshipMappingsRequest {
+  mappings: RelationshipMappingCreate[];
+}
+export interface IBulkCreateRelationshipMappingsResponse
+  extends ApiResponse<BulkMappingResponse> {}
+
+// Analytics/Stats Operations
+export interface IGetMappingStatsRequest {
+  domain_id?: number;
+}
+export interface IGetMappingStatsResponse
+  extends ApiResponse<{
+    entity_mappings: {
+      total: number;
+      verified: number;
+      pending: number;
+      mapped: number;
+      rejected: number;
+      needs_review: number;
+      auto_mapped: number;
+    };
+    relationship_mappings: {
+      total: number;
+      verified: number;
+      pending: number;
+      mapped: number;
+      rejected: number;
+      needs_review: number;
+      auto_mapped: number;
+    };
+  }> {}

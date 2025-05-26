@@ -5,7 +5,8 @@ import "./styles/global.css";
 
 // Layout Components
 export { default as AppLayout } from "./layouts/main";
-export type { AppLayoutProps, MenuItem, MenuSubItem } from "./layouts/main";
+export type { AppLayoutProps } from "./layouts/main";
+export type { MenuItem } from "./layouts/main/sidebar";
 
 // Data Display Components
 export { default as EntityCard } from "./components/entity-card";
@@ -155,4 +156,5 @@ export * from "@/components/ui/progress";
 export * from "@/components/ui/textarea";
 export * from "@/components/ui/avatar";
 export * from "@/components/ui/tooltip";
+export * from "@/components/ui/collapsible";
 export { DialogFooter } from "@/components/ui/dialog";

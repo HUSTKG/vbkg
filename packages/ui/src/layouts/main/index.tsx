@@ -1,22 +1,8 @@
-import { Database, Settings, Users } from "lucide-react";
 import React, { useState } from "react";
 import { cn } from "../../lib/utils";
 import { Header } from "./header";
-import Sidebar from "./sidebar";
+import Sidebar, { MenuItem } from "./sidebar";
 import { Toaster } from "../../components/ui/sonner";
-
-// Interfaces
-export interface MenuSubItem {
-  title: string;
-  path: string;
-}
-
-export interface MenuItem {
-  title: string;
-  path?: string;
-  icon: React.ReactNode;
-  submenu?: MenuSubItem[];
-}
 
 export interface AppLayoutProps {
   children: React.ReactNode;
@@ -36,45 +22,9 @@ export interface AppLayoutProps {
 }
 
 // Default menu items that can be overridden via props
-const defaultMenuItems: MenuItem[] = [
-  {
-    title: "Knowledge Management",
-    icon: <Database size={20} />,
-    submenu: [
-      { title: "Resolve Data Conflicts", path: "/resolve-conflict" },
-      { title: "Review New Data", path: "/review-new-data" },
-      { title: "Add Data Manually", path: "/add-data-manually" },
-    ],
-  },
-  {
-    title: "Monitoring and Administration",
-    icon: <Settings size={20} />,
-    submenu: [
-      { title: "Monitor System Performance", path: "/monitor-performance" },
-      { title: "Manage Users", path: "/manage-users" },
-      { title: "Manage Ontology Structure", path: "/manage-ontology" },
-      { title: "Configure Data Sources", path: "/configure-data-source" },
-      { title: "Configure Data Pipeline", path: "/configure-data-pipeline" },
-    ],
-  },
-  {
-    title: "User Interaction",
-    icon: <Users size={20} />,
-    submenu: [
-      { title: "Send Feedback", path: "/send-feedback" },
-      { title: "Manage API Keys", path: "/manage-api-key" },
-      { title: "Query Knowledge", path: "/query-knowledge" },
-      {
-        title: "Manage Custom Visualization",
-        path: "/manage-custom-visualization",
-      },
-    ],
-  },
-];
-
 const AppLayout: React.FC<AppLayoutProps> = ({
   children,
-  menuItems = defaultMenuItems,
+  menuItems = [],
   onSearch,
   onNotificationClick,
   notificationCount = 0,

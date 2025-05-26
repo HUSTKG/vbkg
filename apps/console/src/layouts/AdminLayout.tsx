@@ -2,12 +2,13 @@ import { useLogout } from "@vbkg/api-client";
 import { AppLayout } from "@vbkg/ui";
 import { getSession, setSession } from "@vbkg/utils";
 import {
-  Database,
-  GitGraph,
-  Home,
-  Monitor,
+  DatabaseIcon,
+  HomeIcon,
+  NetworkIcon,
   Settings,
+  ShieldCheckIcon,
   Users,
+  UsersIcon,
 } from "lucide-react";
 import { Outlet, useNavigate } from "react-router";
 import { queryClient } from "../App";
@@ -21,50 +22,72 @@ const AdminLayout = () => {
       menuItems={[
         {
           title: "Dashboard",
-          icon: <Home />,
           path: "/admin/dashboard",
+          icon: <HomeIcon />,
         },
         {
-          title: "Users",
-          icon: <Users />,
+          title: "Knowledge Graph",
+          icon: <NetworkIcon />,
           submenu: [
             {
-              title: "Manage User Dashboard",
-              path: "/admin/users",
+              title: "📊 Overview",
+              path: "/admin/kg/overview",
             },
             {
-              title: "Manage Users",
-              path: "/admin/users/user",
+              title: "🏢 Entities",
+              path: "/admin/kg/entities",
             },
             {
-              title: "Manage Roles",
-              path: "/admin/users/roles",
+              title: "🔗 Relationships",
+              path: "/admin/kg/relationships",
             },
             {
-              title: "Manage Permissions",
-              path: "/admin/users/permissions",
+              title: "🔍 Graph Explorer",
+              path: "/admin/kg/explorer",
             },
           ],
         },
         {
-          title: "Data Sources",
-          icon: <Database />,
-          path: "/admin/data-sources",
+          title: "Quality Management",
+          icon: <ShieldCheckIcon />,
+          submenu: [
+            {
+              title: "📈 Quality Dashboard",
+              path: "/admin/quality/dashboard",
+            },
+            {
+              title: "⚠️ Conflicts",
+              path: "/admin/quality/conflicts",
+            },
+          ],
         },
         {
-          title: "Data Pipelines",
-          icon: <GitGraph />,
-          path: "/admin/data-pipelines",
+          title: "Data Management",
+          icon: <DatabaseIcon />,
+          submenu: [
+            {
+              title: "🔌 Data Sources",
+              path: "/admin/data/sources",
+            },
+            {
+              title: "⚙️ Pipelines",
+              path: "/admin/data/pipelines",
+            },
+          ],
         },
         {
-          title: "Monitoring",
-          icon: <Monitor />,
-          path: "/admin/monitoring",
-        },
-        {
-          title: "Settings",
-          icon: <Settings />,
-          path: "/admin/settings",
+          title: "User Management",
+          icon: <UsersIcon />,
+          submenu: [
+            {
+              title: "👤 Users",
+              path: "/admin/users",
+            },
+            {
+              title: "🔐 Roles & Permissions",
+              path: "/admin/users/roles",
+            },
+          ],
         },
       ]}
       userEmail={session?.user?.email}

@@ -4,16 +4,11 @@ import { Button } from "@vbkg/ui";
 import { formatBytes } from "../../utils/formatBytes";
 import FileSelectorDialog from "../dialog/file-selector";
 import { getFileIcon } from "../../utils/getFileIcon";
-
-// Types for our component
-interface FileWithMetadata {
-  file: File;
-  metadata?: Record<string, string>;
-}
+import { FileUpload } from "@vbkg/types";
 
 interface FileUploadFormItemProps {
-  value: FileWithMetadata[];
-  onChange: (files: FileWithMetadata[]) => void;
+  value: FileUpload[];
+  onChange: (files: FileUpload[]) => void;
   multiple?: boolean;
   maxFiles?: number;
 }
@@ -34,7 +29,7 @@ const FileUploadFormItem = ({
   };
 
   // Handles files selected from the FileSelector component
-  const handleFilesSelected = (newFiles: FileWithMetadata[]) => {
+  const handleFilesSelected = (newFiles: FileUpload[]) => {
     // If multiple is false, we only take the first file
     const filesToAdd = multiple ? newFiles : newFiles.slice(0, 1);
 
@@ -59,10 +54,10 @@ const FileUploadFormItem = ({
                 className="flex items-center justify-between p-2 border rounded-md bg-gray-50"
               >
                 <div className="flex items-center gap-2 overflow-hidden">
-                  {getFileIcon(fileItem.file.type)}
-                  <span className="text-sm truncate">{fileItem.file.name}</span>
+                  {getFileIcon(fileItem.file_type)}
+                  <span className="text-sm truncate">{fileItem.file_name}</span>
                   <span className="text-xs text-gray-500">
-                    {formatBytes(fileItem.file.size)}
+                    {formatBytes(fileItem.file_size)}
                   </span>
                   {fileItem.metadata &&
                     Object.keys(fileItem.metadata).length > 0 && (

@@ -55,14 +55,14 @@ const DialogComponent: React.FC<DialogProps> = ({
   customTrigger,
   open,
   onOpenChange,
-  showFooter = true,
+  showFooter = false,
   primaryActionText = "Save",
   onPrimaryAction,
   primaryActionDisabled = false,
   cancelText = "Cancel",
   onClose,
   contentClassName = "",
-  size = "md",
+  size = "2xl",
 }) => {
   // For uncontrolled usage
   const [internalOpen, setInternalOpen] = React.useState(false);

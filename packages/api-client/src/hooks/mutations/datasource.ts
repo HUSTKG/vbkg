@@ -6,6 +6,8 @@ import {
 import {
   ICreateDatasourceRequest,
   ICreateDatasourceResponse,
+  ICreatePipelineFromTemplateRequest,
+  ICreatePipelineFromTemplateResponse,
   IDeleteDatasourceRequest,
   IDeleteDatasourceResponse,
   IUpdateDatasourceRequest,
@@ -44,6 +46,7 @@ export const useUpdateDatasource = (
     IUpdateDatasourceRequest
   >,
 ) => {
+  const queryClient = useQueryClient();
   return useMutation<
     IUpdateDatasourceResponse,
     Error,
@@ -52,7 +55,6 @@ export const useUpdateDatasource = (
     mutationFn: DatasourceService.updateDatasource,
     ...options,
     onSuccess: (...params) => {
-      const queryClient = useQueryClient();
       queryClient.invalidateQueries({ queryKey: QueryKeys.datasources.list() });
       options.onSuccess?.(...params);
     },
@@ -66,6 +68,7 @@ export const useDeleteDatasource = (
     IDeleteDatasourceRequest
   >,
 ) => {
+  const queryClient = useQueryClient();
   return useMutation<
     IDeleteDatasourceResponse,
     Error,
@@ -74,9 +77,28 @@ export const useDeleteDatasource = (
     mutationFn: DatasourceService.deleteDatasource,
     ...options,
     onSuccess: (...params) => {
-      const queryClient = useQueryClient();
       queryClient.invalidateQueries({ queryKey: QueryKeys.datasources.list() });
       options.onSuccess?.(...params);
+    },
+  });
+};
+
+export const useCreatePipelineFromTemplate = (
+  options: UseMutationOptions<
+    ICreatePipelineFromTemplateResponse,
+    Error,
+    ICreatePipelineFromTemplateRequest
+  >,
+) => {
+  return useMutation<
+    ICreatePipelineFromTemplateResponse,
+    Error,
+    ICreatePipelineFromTemplateRequest
+  >({
+    mutationFn: DatasourceService.createPipelineFromTemplate,
+    ...options,
+    onSuccess: (...params) => {
+      options?.onSuccess?.(...params);
     },
   });
 };

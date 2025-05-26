@@ -29,9 +29,8 @@ import {
 } from "@vbkg/types";
 import { FiboService } from "../../services/fibo";
 
-// FIBO Class operations
 export const useCreateFiboClass = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     ICreateFiboClassResponse,
     Error,
     ICreateFiboClassRequest
@@ -44,7 +43,7 @@ export const useCreateFiboClass = (
 };
 
 export const useUpdateFiboClass = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     IUpdateFiboClassResponse,
     Error,
     IUpdateFiboClassRequest
@@ -57,7 +56,7 @@ export const useUpdateFiboClass = (
 };
 
 export const useDeleteFiboClass = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     IDeleteFiboClassResponse,
     Error,
     IDeleteFiboClassRequest
@@ -69,9 +68,9 @@ export const useDeleteFiboClass = (
   });
 };
 
-// FIBO Property operations
+// FIBO Property Mutation Hooks (keeping existing)
 export const useCreateFiboProperty = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     ICreateFiboPropertyResponse,
     Error,
     ICreateFiboPropertyRequest
@@ -84,7 +83,7 @@ export const useCreateFiboProperty = (
 };
 
 export const useUpdateFiboProperty = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     IUpdateFiboPropertyResponse,
     Error,
     IUpdateFiboPropertyRequest
@@ -97,7 +96,7 @@ export const useUpdateFiboProperty = (
 };
 
 export const useDeleteFiboProperty = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     IDeleteFiboPropertyResponse,
     Error,
     IDeleteFiboPropertyRequest
@@ -109,9 +108,9 @@ export const useDeleteFiboProperty = (
   });
 };
 
-// Ontology operations
+// Ontology Import Hook (keeping existing)
 export const useImportOntology = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     IImportOntologyResponse,
     Error,
     IImportOntologyRequest
@@ -123,9 +122,9 @@ export const useImportOntology = (
   });
 };
 
-// Entity Mapping operations
+// Entity Mapping Mutation Hooks (updated)
 export const useCreateEntityMapping = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     ICreateEntityMappingResponse,
     Error,
     ICreateEntityMappingRequest
@@ -138,7 +137,7 @@ export const useCreateEntityMapping = (
 };
 
 export const useDeleteEntityMapping = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     IDeleteEntityMappingResponse,
     Error,
     IDeleteEntityMappingRequest
@@ -151,7 +150,7 @@ export const useDeleteEntityMapping = (
 };
 
 export const useVerifyEntityMapping = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     IVerifyEntityMappingResponse,
     Error,
     IVerifyEntityMappingRequest
@@ -163,9 +162,9 @@ export const useVerifyEntityMapping = (
   });
 };
 
-// Relationship Mapping operations
+// Relationship Mapping Mutation Hooks (updated)
 export const useCreateRelationshipMapping = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     ICreateRelationshipMappingResponse,
     Error,
     ICreateRelationshipMappingRequest
@@ -178,7 +177,7 @@ export const useCreateRelationshipMapping = (
 };
 
 export const useDeleteRelationshipMapping = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     IDeleteRelationshipMappingResponse,
     Error,
     IDeleteRelationshipMappingRequest
@@ -191,7 +190,7 @@ export const useDeleteRelationshipMapping = (
 };
 
 export const useVerifyRelationshipMapping = (
-  options: UseMutationOptions<
+  options?: UseMutationOptions<
     IVerifyRelationshipMappingResponse,
     Error,
     IVerifyRelationshipMappingRequest
@@ -202,3 +201,30 @@ export const useVerifyRelationshipMapping = (
     ...options,
   });
 };
+
+// Bulk Operation Hooks
+// export const useBulkCreateEntityMappings = (
+//   options?: UseMutationOptions<
+//     IBulkCreateEntityMappingsResponse,
+//     Error,
+//     IBulkCreateEntityMappingsRequest
+//   >,
+// ) => {
+//   return useMutation({
+//     mutationFn: FiboService.bulkCreateEntityMappings,
+//     ...options,
+//   });
+// };
+//
+// export const useBulkCreateRelationshipMappings = (
+//   options?: UseMutationOptions<
+//     IBulkCreateRelationshipMappingsResponse,
+//     Error,
+//     IBulkCreateRelationshipMappingsRequest
+//   >,
+// ) => {
+//   return useMutation({
+//     mutationFn: FiboService.bulkCreateRelationshipMappings,
+//     ...options,
+//   });
+// };

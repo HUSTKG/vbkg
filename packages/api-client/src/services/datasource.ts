@@ -1,26 +1,18 @@
 import {
   ICreateDatasourceRequest,
   ICreateDatasourceResponse,
+  ICreatePipelineFromTemplateRequest,
+  ICreatePipelineFromTemplateResponse,
   IDeleteDatasourceRequest,
   IDeleteDatasourceResponse,
-  IDeleteFileUploadRequest,
-  IDeleteFileUploadResponse,
   IGetDatasourceRequest,
   IGetDatasourceResponse,
   IGetDatasourcesRequest,
   IGetDatasourcesResponse,
-  IGetFileContentRequest,
-  IGetFileContentResponse,
-  IGetFileUploadRequest,
-  IGetFileUploadResponse,
-  IGetFileUploadsRequest,
-  IGetFileUploadsResponse,
+  IGetPipelineTemplatesRequest,
+  IGetPipelineTemplatesResponse,
   IUpdateDatasourceRequest,
   IUpdateDatasourceResponse,
-  IUpdateFileStatusRequest,
-  IUpdateFileStatusResponse,
-  IUploadFileRequest,
-  IUploadFileResponse,
 } from "@vbkg/types";
 
 import { API_ENDPOINTS } from "@vbkg/utils";
@@ -79,10 +71,42 @@ const deleteDatasource = async (
     .then((res) => res.data);
 };
 
+const getPipelineTemplates = async (
+  input: IGetPipelineTemplatesRequest,
+): Promise<IGetPipelineTemplatesResponse> => {
+  return await api()
+    .get<IGetPipelineTemplatesResponse>(
+      API_ENDPOINTS.GET_PIPELINE_TEMPLATES(input.datasource_id),
+      {
+        params: {
+          ...input,
+        },
+      },
+    )
+    .then((res) => res.data);
+};
+
+const createPipelineFromTemplate = async ({
+  datasource_id,
+  ...input
+}: ICreatePipelineFromTemplateRequest): Promise<ICreatePipelineFromTemplateResponse> => {
+  return await api()
+    .post<ICreatePipelineFromTemplateResponse>(
+      API_ENDPOINTS.CREATE_PIPELINE_FROM_TEMPLATE(datasource_id),
+      null,
+      {
+        params: input,
+      },
+    )
+    .then((res) => res.data);
+};
+
 export const DatasourceService = {
   createDatasource,
   readDatasources,
   readDatasource,
   updateDatasource,
   deleteDatasource,
+  getPipelineTemplates,
+  createPipelineFromTemplate,
 };

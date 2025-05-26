@@ -1,74 +1,124 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import {
-  IReadUsersRequest,
-  IReadUsersResponse,
-  IReadUserMeRequest,
-  IReadUserMeResponse,
-  IReadUserRequest,
-  IReadUserResponse,
-  IReadRolesRequest,
-  IReadRolesResponse,
-  IReadPermissionsRequest,
-  IReadPermissionsResponse,
+  IGetUsersRequest,
+  IGetUsersResponse,
+  IGetUserRequest,
+  IGetUserResponse,
+  IGetUserMeResponse,
+  IGetRolesResponse,
+  IGetPermissionsResponse,
+  IGetAPIKeysResponse,
+  IGetUserActivityRequest,
+  IGetUserActivityResponse,
+  IGetSystemStatsResponse,
 } from "@vbkg/types";
+import { QueryKeys } from "../../config/queryKeys";
 import { UserService } from "../../services/user";
 
-// Fetch all users
+// Fetch all users with pagination and filters
 export const useUsers = (
-  input: IReadUsersRequest,
-  options?: UseQueryOptions<IReadUsersResponse, Error>,
+  input: IGetUsersRequest = {},
+  options?: Partial<UseQueryOptions<IGetUsersResponse, Error>>,
 ) => {
-  return useQuery<IReadUsersResponse, Error>({
-    queryKey: ["users", input],
-    queryFn: () => UserService.readUsers(input),
-    ...options,
-  });
-};
-
-// Fetch current user
-export const useUserMe = (
-  input: IReadUserMeRequest,
-  options?: UseQueryOptions<IReadUserMeResponse, Error>,
-) => {
-  return useQuery<IReadUserMeResponse, Error>({
-    queryKey: ["userMe", input],
-    queryFn: () => UserService.readUserMe(input),
+  return useQuery<IGetUsersResponse, Error>({
+    queryKey: QueryKeys.users.list(input),
+    queryFn: () => UserService.getUsers(input),
     ...options,
   });
 };
 
 // Fetch specific user
 export const useUser = (
-  input: IReadUserRequest,
-  options?: UseQueryOptions<IReadUserResponse, Error>,
+  input: IGetUserRequest,
+  options?: UseQueryOptions<IGetUserResponse, Error>,
 ) => {
-  return useQuery<IReadUserResponse, Error>({
-    queryKey: ["user", input.id],
-    queryFn: () => UserService.readUser(input),
+  return useQuery<IGetUserResponse, Error>({
+    queryKey: QueryKeys.users.detail(input.user_id),
+    queryFn: () => UserService.getUser(input),
+    enabled: !!input.user_id,
     ...options,
   });
 };
 
-// Fetch roles
+// Fetch current user
+export const useUserMe = (
+  options?: UseQueryOptions<IGetUserMeResponse, Error>,
+) => {
+  return useQuery<IGetUserMeResponse, Error>({
+    queryKey: QueryKeys.users.me(),
+    queryFn: () => UserService.getUserMe(),
+    ...options,
+  });
+};
+
+// Fetch all roles
 export const useRoles = (
-  input: IReadRolesRequest,
-  options?: UseQueryOptions<IReadRolesResponse, Error>,
+  options?: UseQueryOptions<IGetRolesResponse, Error>,
 ) => {
-  return useQuery<IReadRolesResponse, Error>({
-    queryKey: ["roles", input],
-    queryFn: () => UserService.readRoles(input),
+  return useQuery<IGetRolesResponse, Error>({
+    queryKey: QueryKeys.users.roles(),
+    queryFn: () => UserService.getRoles(),
+    staleTime: 5 * 60 * 1000, // 5 minutes - roles don't change often
     ...options,
   });
 };
 
-// Fetch permissions
+// Fetch all permissions
 export const usePermissions = (
-  input: IReadPermissionsRequest,
-  options?: UseQueryOptions<IReadPermissionsResponse, Error>,
+  options?: UseQueryOptions<IGetPermissionsResponse, Error>,
 ) => {
-  return useQuery<IReadPermissionsResponse, Error>({
-    queryKey: ["permissions", input],
-    queryFn: () => UserService.readPermissions(input),
+  return useQuery<IGetPermissionsResponse, Error>({
+    queryKey: QueryKeys.users.permissions(),
+    queryFn: () => UserService.getPermissions(),
+    staleTime: 5 * 60 * 1000, // 5 minutes - permissions don't change often
+    ...options,
+  });
+};
+
+// Fetch user's API keys
+export const useUserAPIKeys = (
+  options?: UseQueryOptions<IGetAPIKeysResponse, Error>,
+) => {
+  return useQuery<IGetAPIKeysResponse, Error>({
+    queryKey: QueryKeys.users.apiKeys(),
+    queryFn: () => UserService.getUserAPIKeys(),
+    ...options,
+  });
+};
+
+// Fetch user activity (current user)
+export const useMyActivity = (
+  input: IGetUserActivityRequest = { limit: 50 },
+  options?: UseQueryOptions<IGetUserActivityResponse, Error>,
+) => {
+  return useQuery<IGetUserActivityResponse, Error>({
+    queryKey: QueryKeys.users.activity.my(input),
+    queryFn: () => UserService.getUserActivity(input),
+    ...options,
+  });
+};
+
+// Fetch specific user activity
+export const useUserActivity = (
+  input: IGetUserActivityRequest,
+  options?: UseQueryOptions<IGetUserActivityResponse, Error>,
+) => {
+  return useQuery<IGetUserActivityResponse, Error>({
+    queryKey: QueryKeys.users.activity.user(input.user_id!, input),
+    queryFn: () => UserService.getUserActivity(input),
+    enabled: !!input.user_id,
+    ...options,
+  });
+};
+
+// Fetch system statistics (admin only)
+export const useSystemStats = (
+  options?: Partial<UseQueryOptions<IGetSystemStatsResponse, Error>>,
+) => {
+  return useQuery<IGetSystemStatsResponse, Error>({
+    queryKey: QueryKeys.users.stats(),
+    queryFn: () => UserService.getSystemStats(),
+    refetchInterval: 5 * 60 * 1000, // Refresh every 5 minutes
     ...options,
   });
 };

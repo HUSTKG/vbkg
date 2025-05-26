@@ -40,8 +40,14 @@ import {
   IVerifyEntityMappingResponse,
   IVerifyRelationshipMappingRequest,
   IVerifyRelationshipMappingResponse,
+  IReadFiboClassesResponse,
+  // ISuggestEntityTypesRequest,
+  // ISuggestEntityTypesResponse,
+  // ISuggestRelationshipTypesRequest,
+  // ISuggestRelationshipTypesResponse,
+  // IBulkCreateEntityMappingsRequest,
+  // IBulkCreateEntityMappingsResponse,
 } from "@vbkg/types";
-import { IReadFiboClassesResponse } from "@vbkg/types/src";
 import { API_ENDPOINTS } from "@vbkg/utils";
 import { api } from "../config/axios";
 
@@ -140,6 +146,7 @@ const deleteFiboProperty = async (
     .then((res) => res.data);
 };
 
+// Ontology import (keeping existing)
 const importOntology = async (
   input: IImportOntologyRequest,
 ): Promise<IImportOntologyResponse> => {
@@ -148,6 +155,7 @@ const importOntology = async (
     .then((res) => res.data);
 };
 
+// Entity Mapping operations (updated)
 const readEntityMappings = async (
   input: IReadEntityMappingsRequest,
 ): Promise<IReadEntityMappingsResponse> => {
@@ -184,12 +192,13 @@ const verifyEntityMapping = async (
 ): Promise<IVerifyEntityMappingResponse> => {
   return await api()
     .put<IVerifyEntityMappingResponse>(
-      API_ENDPOINTS.VERIFY_ENTITY_MAPPING(input.entity_type),
+      API_ENDPOINTS.VERIFY_ENTITY_MAPPING(input.id),
       input,
     )
     .then((res) => res.data);
 };
 
+// Relationship Mapping operations (updated)
 const readRelationshipMappings = async (
   input: IReadRelationshipMappingsRequest,
 ): Promise<IReadRelationshipMappingsResponse> => {
@@ -229,11 +238,34 @@ const verifyRelationshipMapping = async (
 ): Promise<IVerifyRelationshipMappingResponse> => {
   return await api()
     .put<IVerifyRelationshipMappingResponse>(
-      API_ENDPOINTS.VERIFY_RELATIONSHIP_MAPPING(input.relationship_type),
+      API_ENDPOINTS.VERIFY_RELATIONSHIP_MAPPING(input.id),
       input,
     )
     .then((res) => res.data);
 };
+
+// // New suggestion operations
+// const suggestEntityTypes = async (
+//   input: ISuggestEntityTypesRequest,
+// ): Promise<ISuggestEntityTypesResponse> => {
+//   return await api()
+//     .post<ISuggestEntityTypesResponse>(
+//       API_ENDPOINTS.SUGGEST_ENTITY_TYPES,
+//       input,
+//     )
+//     .then((res) => res.data);
+// };
+//
+// const suggestRelationshipTypes = async (
+//   input: ISuggestRelationshipTypesRequest,
+// ): Promise<ISuggestRelationshipTypesResponse> => {
+//   return await api()
+//     .post<ISuggestRelationshipTypesResponse>(
+//       API_ENDPOINTS.su,
+//       input,
+//     )
+//     .then((res) => res.data);
+// };
 
 const suggestFiboClasses = async (
   input: ISuggestFiboClassesRequest,
@@ -257,26 +289,78 @@ const suggestFiboProperties = async (
     .then((res) => res.data);
 };
 
+// // Bulk operations
+// const bulkCreateEntityMappings = async (
+//   input: IBulkCreateEntityMappingsRequest,
+// ): Promise<IBulkCreateEntityMappingsResponse> => {
+//   return await api()
+//     .post<IBulkCreateEntityMappingsResponse>(
+//       API_ENDPOINTS.BULK_CREATE_ENTITY_MAPPINGS,
+//       input,
+//     )
+//     .then((res) => res.data);
+// };
+//
+// const bulkCreateRelationshipMappings = async (
+//   input: IBulkCreateRelationshipMappingsRequest,
+// ): Promise<IBulkCreateRelationshipMappingsResponse> => {
+//   return await api()
+//     .post<IBulkCreateRelationshipMappingsResponse>(
+//       API_ENDPOINTS.BULK_CREATE_RELATIONSHIP_MAPPINGS,
+//       input,
+//     )
+//     .then((res) => res.data);
+// };
+
+// // Stats
+// const getMappingStats = async (
+//   input: IGetMappingStatsRequest,
+// ): Promise<IGetMappingStatsResponse> => {
+//   return await api()
+//     .get<IGetMappingStatsResponse>(API_ENDPOINTS.GET_MAPPING_STATS, {
+//       params: input,
+//     })
+//     .then((res) => res.data);
+// };
+
 export const FiboService = {
-  readFiboClasses,
-  createFiboClass,
-  readFiboClass,
-  updateFiboClass,
-  deleteFiboClass,
   readFiboProperties,
   createFiboProperty,
   readFiboProperty,
   updateFiboProperty,
   deleteFiboProperty,
+
+  // Ontology Import
   importOntology,
+
+  // Entity Mappings (updated)
   readEntityMappings,
   createEntityMapping,
   deleteEntityMapping,
   verifyEntityMapping,
+
+  // Relationship Mappings (updated)
   readRelationshipMappings,
   createRelationshipMapping,
   deleteRelationshipMapping,
   verifyRelationshipMapping,
+
+  // // Suggestions
+  // suggestEntityTypes,
+  // suggestRelationshipTypes,
   suggestFiboClasses,
   suggestFiboProperties,
+
+  // Bulk Operations
+  // bulkCreateEntityMappings,
+  // bulkCreateRelationshipMappings,
+
+  // Stats
+  // getMappingStats,
+
+  readFiboClasses,
+  createFiboClass,
+  readFiboClass,
+  updateFiboClass,
+  deleteFiboClass,
 };

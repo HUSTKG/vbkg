@@ -29,3 +29,17 @@ export interface IDeleteDatasourceRequest {
   id: string;
 }
 export interface IDeleteDatasourceResponse extends ApiResponse<unknown> {}
+
+export interface IGetPipelineTemplatesRequest {
+  datasource_id: string;
+}
+
+export interface IGetPipelineTemplatesResponse extends ApiResponse<any> {}
+
+export interface ICreatePipelineFromTemplateRequest {
+  datasource_id: string;
+  template_name: string;
+  custom_options: Record<string, any>;
+}
+
+export interface ICreatePipelineFromTemplateResponse extends ApiResponse<any> {}

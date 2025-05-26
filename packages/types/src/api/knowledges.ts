@@ -33,14 +33,6 @@ export interface IDeleteEntityRequest {
 }
 export interface IDeleteEntityResponse extends ApiResponse<unknown> {}
 
-export interface ISearchKGEntitiesRequest {
-  query: string;
-  entity_type?: string;
-  fibo_class?: string;
-  limit?: number;
-}
-export interface ISearchKGEntitiesResponse extends ApiResponse<Entity[]> {}
-
 export interface ICreateRelationshipRequest extends RelationshipCreate {}
 export interface ICreateRelationshipResponse
   extends ApiResponse<Relationship> {}

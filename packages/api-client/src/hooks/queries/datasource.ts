@@ -4,6 +4,8 @@ import {
   IGetDatasourceResponse,
   IGetDatasourcesRequest,
   IGetDatasourcesResponse,
+  IGetPipelineTemplatesRequest,
+  IGetPipelineTemplatesResponse,
 } from "@vbkg/types";
 import { QueryKeys } from "../../config/queryKeys";
 import { DatasourceService } from "../../services/datasource";
@@ -28,6 +30,17 @@ export const useDatasource = (
   return useQuery<IGetDatasourceResponse, Error>({
     queryKey: QueryKeys.datasources.details(input.id),
     queryFn: () => DatasourceService.readDatasource(input),
+    ...options,
+  });
+};
+
+export const usePipelineTemplates = (
+  input: IGetPipelineTemplatesRequest,
+  options?: UseQueryOptions<IGetPipelineTemplatesResponse, Error>,
+) => {
+  return useQuery<IGetPipelineTemplatesResponse, Error>({
+    queryKey: QueryKeys.datasources.pipeline_templates(input.datasource_id),
+    queryFn: () => DatasourceService.getPipelineTemplates(input),
     ...options,
   });
 };

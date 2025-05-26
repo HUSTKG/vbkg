@@ -2,7 +2,8 @@ import { AppForm, Card, toast } from "@vbkg/ui";
 import { loginSchema } from "@vbkg/schemas";
 import { Link, useNavigate } from "react-router";
 import { useLoginJson } from "@vbkg/api-client";
-import { setSession } from "@vbkg/utils";
+import { getSession, setSession } from "@vbkg/utils";
+import { useEffect } from "react";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,14 +23,28 @@ export default function Login() {
       });
       if (data.data.user.roles.includes("admin")) {
         navigate("/admin");
+      } else if (data.data.user.roles.includes("expert")) {
+        navigate("/expert");
       } else {
-        navigate("/dashboard");
+        navigate("/user");
       }
     },
     onError: (error) => {
       toast("Login failed " + error.message);
     },
   });
+
+  useEffect(() => {
+    const sessions = getSession();
+    if (!sessions) return;
+    if (sessions.user.roles.includes("admin")) {
+      navigate("/admin");
+    } else if (sessions.user.roles.includes("expert")) {
+      navigate("/expert");
+    } else {
+      navigate("/user");
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

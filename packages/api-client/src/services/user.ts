@@ -1,59 +1,55 @@
 import {
-  IDeleteUserRequest,
-  IDeleteUserResponse,
-  IReadPermissionsRequest,
-  IReadPermissionsResponse,
-  IReadRolesRequest,
-  IReadRolesResponse,
-  IReadUserMeRequest,
-  IReadUserMeResponse,
-  IReadUserRequest,
-  IReadUserResponse,
-  IReadUsersRequest,
-  IReadUsersResponse,
-  IUpdateUserMeRequest,
-  IUpdateUserMeResponse,
+  IGetUsersRequest,
+  IGetUsersResponse,
+  IGetUserRequest,
+  IGetUserResponse,
+  IGetUserMeResponse,
   IUpdateUserRequest,
   IUpdateUserResponse,
+  IUpdateUserMeRequest,
+  IUpdateUserMeResponse,
+  IDeleteUserRequest,
+  IDeleteUserResponse,
+  IGetRolesResponse,
+  IGetPermissionsResponse,
+  ICreateAPIKeyRequest,
+  ICreateAPIKeyResponse,
+  IGetAPIKeysResponse,
+  IRevokeAPIKeyRequest,
+  IRevokeAPIKeyResponse,
+  IGetUserActivityRequest,
+  IGetUserActivityResponse,
+  IAssignRoleRequest,
+  IAssignRoleResponse,
+  IRemoveRoleRequest,
+  IRemoveRoleResponse,
+  IGetSystemStatsResponse,
 } from "@vbkg/types";
-import { api } from "../config/axios";
+
 import { API_ENDPOINTS } from "@vbkg/utils";
+import { api } from "../config/axios";
 
-const readUsers = async (
-  input: IReadUsersRequest,
-): Promise<IReadUsersResponse> => {
+const getUsers = async (
+  input: IGetUsersRequest,
+): Promise<IGetUsersResponse> => {
   return await api()
-    .get<IReadUsersResponse>(API_ENDPOINTS.READ_USERS, {
-      params: input,
+    .get<IGetUsersResponse>(API_ENDPOINTS.READ_USERS, {
+      params: {
+        ...input,
+      },
     })
     .then((res) => res.data);
 };
 
-const readUserMe = async (
-  input: IReadUserMeRequest,
-): Promise<IReadUserMeResponse> => {
+const getUser = async (input: IGetUserRequest): Promise<IGetUserResponse> => {
   return await api()
-    .get<IReadUserResponse>(API_ENDPOINTS.READ_USER_ME, {
-      params: input,
-    })
+    .get<IGetUserResponse>(API_ENDPOINTS.READ_USER(input.user_id))
     .then((res) => res.data);
 };
 
-const updateUserMe = async (
-  input: IUpdateUserMeRequest,
-): Promise<IUpdateUserMeResponse> => {
+const getUserMe = async (): Promise<IGetUserMeResponse> => {
   return await api()
-    .put<IUpdateUserResponse>(API_ENDPOINTS.UPDATE_USER_ME, input)
-    .then((res) => res.data);
-};
-
-const readUser = async (
-  input: IReadUserRequest,
-): Promise<IReadUserResponse> => {
-  return await api()
-    .get<IReadUserResponse>(API_ENDPOINTS.READ_USER(input.id), {
-      params: input,
-    })
+    .get<IGetUserMeResponse>(API_ENDPOINTS.READ_USER_ME)
     .then((res) => res.data);
 };
 
@@ -61,7 +57,18 @@ const updateUser = async (
   input: IUpdateUserRequest,
 ): Promise<IUpdateUserResponse> => {
   return await api()
-    .put<IUpdateUserResponse>(API_ENDPOINTS.UPDATE_USER(input.id), input)
+    .patch<IUpdateUserResponse>(
+      API_ENDPOINTS.UPDATE_USER(input.user_id),
+      input.data,
+    )
+    .then((res) => res.data);
+};
+
+const updateUserMe = async (
+  input: IUpdateUserMeRequest,
+): Promise<IUpdateUserMeResponse> => {
+  return await api()
+    .patch<IUpdateUserMeResponse>(API_ENDPOINTS.UPDATE_USER_ME, input.data)
     .then((res) => res.data);
 };
 
@@ -69,37 +76,106 @@ const deleteUser = async (
   input: IDeleteUserRequest,
 ): Promise<IDeleteUserResponse> => {
   return await api()
-    .delete<IDeleteUserResponse>(API_ENDPOINTS.DELETE_USER(input.id))
+    .delete<IDeleteUserResponse>(API_ENDPOINTS.DELETE_USER(input.user_id))
     .then((res) => res.data);
 };
 
-const readRoles = async (
-  input: IReadRolesRequest,
-): Promise<IReadRolesResponse> => {
+const getRoles = async (): Promise<IGetRolesResponse> => {
   return await api()
-    .get<IReadRolesResponse>(API_ENDPOINTS.READ_ROLES, {
+    .get<IGetRolesResponse>(API_ENDPOINTS.READ_ROLES)
+    .then((res) => res.data);
+};
+
+const getPermissions = async (): Promise<IGetPermissionsResponse> => {
+  return await api()
+    .get<IGetPermissionsResponse>(API_ENDPOINTS.READ_PERMISSIONS)
+    .then((res) => res.data);
+};
+
+const createAPIKey = async (
+  input: ICreateAPIKeyRequest,
+): Promise<ICreateAPIKeyResponse> => {
+  return await api()
+    .post<ICreateAPIKeyResponse>(API_ENDPOINTS.CREATE_API_KEY, null, {
       params: input,
     })
     .then((res) => res.data);
 };
 
-const readPermissions = async (
-  input: IReadPermissionsRequest
-): Promise<IReadPermissionsResponse> => {
+const getUserAPIKeys = async (): Promise<IGetAPIKeysResponse> => {
   return await api()
-	.get<IReadPermissionsResponse>(API_ENDPOINTS.READ_PERMISSIONS, {
-	  params: input,
-	})
-	.then((res) => res.data);
-}
+    .get<IGetAPIKeysResponse>(API_ENDPOINTS.READ_USER_API_KEYS)
+    .then((res) => res.data);
+};
+
+const revokeAPIKey = async (
+  input: IRevokeAPIKeyRequest,
+): Promise<IRevokeAPIKeyResponse> => {
+  return await api()
+    .delete<IRevokeAPIKeyResponse>(
+      API_ENDPOINTS.REVOKE_API_KEY(input.api_key_id),
+    )
+    .then((res) => res.data);
+};
+
+const getUserActivity = async (
+  input: IGetUserActivityRequest,
+): Promise<IGetUserActivityResponse> => {
+  const endpoint = input.user_id
+    ? API_ENDPOINTS.READ_USER_ACTIVITY(input.user_id)
+    : API_ENDPOINTS.READ_MY_ACTIVITY;
+
+  return await api()
+    .get<IGetUserActivityResponse>(endpoint, {
+      params: {
+        limit: input.limit,
+        skip: input.skip,
+        action_filter: input.action_filter,
+      },
+    })
+    .then((res) => res.data);
+};
+
+const assignRole = async (
+  input: IAssignRoleRequest,
+): Promise<IAssignRoleResponse> => {
+  return await api()
+    .post<IAssignRoleResponse>(
+      API_ENDPOINTS.ASSIGN_USER_ROLE(input.user_id, input.role_name),
+    )
+    .then((res) => res.data);
+};
+
+const removeRole = async (
+  input: IRemoveRoleRequest,
+): Promise<IRemoveRoleResponse> => {
+  return await api()
+    .delete<IRemoveRoleResponse>(
+      API_ENDPOINTS.REMOVE_USER_ROLE(input.user_id, input.role_name),
+    )
+    .then((res) => res.data);
+};
+
+const getSystemStats = async (): Promise<IGetSystemStatsResponse> => {
+  return await api()
+    .get<IGetSystemStatsResponse>(API_ENDPOINTS.ADMIN_SYSTEM_STATS)
+    .then((res) => res.data);
+};
 
 export const UserService = {
-  readUsers,
-  readUserMe,
-  updateUserMe,
-  readUser,
+  getUsers,
+  getUser,
+  getUserMe,
   updateUser,
+  updateUserMe,
   deleteUser,
-  readRoles,
-  readPermissions
+  getRoles,
+  getPermissions,
+  createAPIKey,
+  getUserAPIKeys,
+  revokeAPIKey,
+  getUserActivity,
+  assignRole,
+  removeRole,
+  getSystemStats,
 };
